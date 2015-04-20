@@ -31,7 +31,7 @@ var client = new Twitter({
 });
 ```
 
-You'll also need to add the Twitter username of your bot (with the @ symbol) to the config file. (This is for tracking mentions as well as making sure the bot ignores actions from itself so it doesn't get caught in a loop).
+You'll also need to add the Twitter username of your bot (without the @ symbol) to the config file. (This is for tracking mentions as well as making sure the bot ignores actions from itself so it doesn't get caught in a loop).
 
 ```
 // Your robot's Twitter username (without the @ symbol)
