@@ -1,9 +1,13 @@
 # NodeEbot
 
+_Current Version: 0.1.1_
+
 This is NodeEBot (pronounced as _"nodey bot"_ or even _"naughty bot"_, if you prefer). It stands for **Node** **E**-books **Bot**.
 
 
 It's a Nodejs package for creating Twitter bots which can write their own tweets and interact with other users (by favoriting, replying, and following). This project draws heavy inspiration from the [twitter_ebooks](https://github.com/mispy/twitter_ebooks) gem for Ruby.
+
+You can see two examples of this bot in action at [@daveleeeeee](https://twitter.com/daveleeeeee) and [@roboderp](https://twitter.com/roboderp).
 
 ## Installation and Usage
 
