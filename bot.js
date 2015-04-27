@@ -73,6 +73,13 @@ var rankKeywords = false;
 * Additional configuration options
 */
 
+/** Using npm forever?
+* Encountering weird issue where the Twitter streaming API will just die with no errors.
+* If we're using forever, we'll kill the node server and forever will restart it and reinitialize the stream.
+**/
+var usingForever = true;
+var foreverInterval = 21600000; // This is ~6 hours in milliseconds, which will be how often we'll restart the server.
+
 /* Percent chance that the bot will add additional emojis
 ** to the end of a tweet. e.g., .3 = 30%. 
 */
@@ -123,7 +130,7 @@ var randomReplies = .03;
 twitterInterval = twitterInterval * 1000;
 
 // Load up robot settings.
-console.log('\n\nNODEEBOT FOR NODEJS v.0.1.1');
+console.log('\n\nNODEEBOT FOR NODEJS v.0.1.2');
 console.log('by Dave Schumaker (@davely)\n');
 console.log('-== CONFIG SETTINGS ==-');
 console.log(' -Post to Twitter? ' + postTweets);
@@ -531,7 +538,6 @@ var addKeyword = function(word) {
 
 function checkExists(value) {
   if (!value) {
-    //console.log('POOP ERROR!!! ' + value);
     return '';
   } else {
     return value;
@@ -917,3 +923,13 @@ setInterval(function() {
   // Check for friends 
   getFollowers();
 }, 180000);
+
+/**
+* Restarting our server
+**/
+setInterval(function() {
+  if (usingForever) {
+    console.log('\n\n--=== Restarting Server ===--\n\n');
+    process.exit();
+  }
+}, foreverInterval);

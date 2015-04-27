@@ -1,6 +1,6 @@
 # NodeEbot
 
-_Current Version: 0.1.1_
+_Current Version: 0.1.2_
 
 This is NodeEBot (pronounced as _"nodey bot"_ or even _"naughty bot"_, if you prefer). It stands for **Node** **E**-books **Bot**.
 
@@ -41,6 +41,8 @@ robotName = "xxxx";
 
 Once that's done, the bot is **almost** ready to go. You can modify a few other settings that influence how chatty the bot is, how often it will interact with other users or use random hashtags and emojis.
 
+In order to run the bot, I use the _[forever](https://www.npmjs.com/package/forever)_ npm package. This allows us to automatically restart the server in case of a crash, as well as force restart the server in order to reload the Twitter stream (added in v 0.1.2).
+
 ## Source material
 
 The one last thing that you'll need to do is give it some source material to generate text from. I use source material my own Twitter archive.
@@ -74,6 +76,16 @@ If you want to run multiple bots for different Twitter accounts, copy this proje
 * Allow robot to reply with some content (e.g., if someone asks what it thinks about 'baseball,' it tries to compose a reply that mentions 'baseball.'
 * Retweet various tweets that it finds interesting based on keywords and interests.
 * Let it potentially upload images or GIFs.
+
+## Changelog
+
+### v 0.1.2 (2015/04/27)
+
+* Implemented a hacky fix for an issue I'm having with the Twitter Streaming API randomly dying without an error. If we're running this with the npm package forever, let's kill the server and restart if ever few hours.
+
+### v 0.1.1 (2015/04/19)
+
+* Initial public release!
 
 ## Other stuff
 
