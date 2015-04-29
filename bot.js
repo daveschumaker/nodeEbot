@@ -130,7 +130,7 @@ var randomReplies = .03;
 twitterInterval = twitterInterval * 1000;
 
 // Load up robot settings.
-console.log('\n\nNODEEBOT FOR NODEJS v.0.1.2');
+console.log('\n\nNODEEBOT FOR NODEJS v.0.1.3');
 console.log('by Dave Schumaker (@davely)\n');
 console.log('-== CONFIG SETTINGS ==-');
 console.log(' -Post to Twitter? ' + postTweets);
@@ -254,7 +254,7 @@ var checkReply = function(tweet) {
     // Prevent robot from going into a reply loop with itself!
     if (replyUsername.toLowerCase() != robotName.toLowerCase() && replyCount < 5) {
       // Quick and dirty way to add any bots to our temporary replies blacklist.
-      if (otherBots.indexOf(replyUsername.toLowerCase()) != 1) {
+      if (otherBots.indexOf(replyUsername.toLowerCase()) != -1) {
         console.log('User is in our bot list. Temporarily limiting replies to this user.')
         trackReplies.push(replyUsername,replyUsername,replyUsername,replyUsername,replyUsername,replyUsername);
       }

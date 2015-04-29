@@ -1,6 +1,6 @@
 # NodeEbot
 
-_Current Version: 0.1.2_
+_Current Version: 0.1.3_
 
 This is NodeEBot (pronounced as _"nodey bot"_ or even _"naughty bot"_, if you prefer). It stands for **Node** **E**-books **Bot**.
 
@@ -78,6 +78,10 @@ If you want to run multiple bots for different Twitter accounts, copy this proje
 * Let it potentially upload images or GIFs.
 
 ## Changelog
+
+### v 0.1.3 (2015/04/28)
+
+* Fixed bug that would cause bot to think that *all users* replying to it were found in our otherBots array and kept applying a temporary time out on replies, even if not needed.
 
 ### v 0.1.2 (2015/04/27)
 
