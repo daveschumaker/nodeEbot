@@ -1,6 +1,6 @@
 # NodeEbot
 
-_Current Version: 0.1.3_
+_Current Version: 0.1.4_
 
 This is NodeEBot (pronounced as _"nodey bot"_ or even _"naughty bot"_, if you prefer). It stands for **Node** **E**-books **Bot**.
 
@@ -78,6 +78,10 @@ If you want to run multiple bots for different Twitter accounts, copy this proje
 * Let it potentially upload images or GIFs.
 
 ## Changelog
+
+### v 0.1.4 (2015/05/07)
+
+* Simple change to load and require underscore. This is going to help simplify some of my functions in future development.
 
 ### v 0.1.3 (2015/04/28)
 

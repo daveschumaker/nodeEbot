@@ -9,6 +9,7 @@
 var util = require('util');
 var fs = require('fs');
 var Twitter = require('twitter');
+var _ = require('underscore');
 
 // Twitter API configuration
 var client = new Twitter({
@@ -130,7 +131,7 @@ var randomReplies = .03;
 twitterInterval = twitterInterval * 1000;
 
 // Load up robot settings.
-console.log('\n\nNODEEBOT FOR NODEJS v.0.1.3');
+console.log('\n\nNODEEBOT FOR NODEJS v.0.1.4');
 console.log('by Dave Schumaker (@davely)\n');
 console.log('-== CONFIG SETTINGS ==-');
 console.log(' -Post to Twitter? ' + postTweets);
