@@ -2,8 +2,9 @@
 * nodeEbot v.2.0.0! 
 * A twitter_ebooks style bot for Node.js
 * by Dave Schumaker (@davely)
+* https://github.com/daveschumaker/nodeEbot
 *
-* Heavily inspired by the twitter_ebooks project for Ruby by Mispy
+* Heavily inspired by the following twitter_ebooks project for Ruby by Mispy:
 * https://github.com/mispy/twitter_ebooks
 */
 
