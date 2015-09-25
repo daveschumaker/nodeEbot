@@ -53,6 +53,8 @@ module.exports = {
             if (words[j] !== '' && checkValid === true) {
 
               // New method for tracking words...
+              // TODO: This is a work in progress to improve how we're storing and 
+              // referencing our word dictionary. WIP for v.2.0.0
               // Check if the word even exists in our array.
               // If not, let's add it and then build in our template.
               if (!this.dictionary[words[j]]) {
@@ -64,8 +66,14 @@ module.exports = {
               } else {
                 // Word already exists in our dictionary. Let's update some stuff!
                 this.dictionary[words[j]].count++;
+                this.dictionary[words[j]].next_words.push(this.checkExists(words[j+1]));
+                this.dictionary[words[j]].prev_words.push(this.checkExists(words[j-1]));
               }             
 
+              // NOTE: This is the current way we're storing data in our word dictionary. 
+              // We simply add this object to an array. This means multiple objects will exist
+              // that feature the same object. It's really inefficient and long term, I want to
+              // improve how this works.
               var curWord = {
                 first_word: words[j],
                 word_pair: words[j] + ' ' + this.checkExists(words[j+1]),
@@ -88,7 +96,7 @@ module.exports = {
     //console.log('STARTWORDS: ', this.startwords);
     //console.log(this.wordpairs);
     console.log('TOTAL WORDS: ', countWords);
-    console.log('DICTIONARY: ', this.dictionary);
+    //console.log('DICTIONARY: ', this.dictionary);
     return this.wordpairs;
   },
 
@@ -107,7 +115,7 @@ module.exports = {
     // Sometimes, an undefined value is passed in here and we need to properly handle it.
     // Let's just return from the function and do nothing.
     if (word === undefined) {
-      console.log('checkSentenceEnd, Nothing Found: ', word);
+      //console.log('checkSentenceEnd, Nothing Found: ', word);
       return false;
     }
 
