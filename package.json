@@ -1,0 +1,20 @@
+{
+  "name": "nodebot2",
+  "version": "2.0.0",
+  "description": "A twitter_ebooks style bot for Node.js ",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/daveschumaker/nodeEbot"
+  },
+  "author": "Dave Schumaker",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^2.10.0",
+    "twitter": "^1.2.5"
+  }
+}
