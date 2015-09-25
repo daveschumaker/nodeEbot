@@ -1,6 +1,7 @@
 // TEXT GENERATOR!
 module.exports = {
   // Keep track of all our word stats
+  dictionary: {}, // This is a new object I'm using to generate sentences in a more efficient manner than the wordpairs array.
   startwords: [], // Words that start a sentence.
   hashtags: [], // Automatically detect any hashtags that we use.
   wordpairs: [], // This is where we'll store our dictionary of word pairs
@@ -11,14 +12,37 @@ module.exports = {
   buildCorpus: function(content) {
     var countWords = 0;
 
-    for (var i = 0; i < content.length; i++) {
-        var words = content[i].split(' ');
+    // This for-loop will iterate over every single line of text that's passed in from the "content" argument.
+    // This will be text that's cleaned up and formatted correctly after the server / bot reads data from
+    // our tweets.txt file. In the case below, content[currentLine] will represent one line of text.
+    // Example: content[currentLine] === "Oh, man. I'm really hungry!"
+    for (var currentLine = 0; currentLine < content.length; currentLine++) {
+
+        // In order to start properly building our corpus of processed text, 
+        // we're going to need to split up each word in our sentence individually into an array.
+        // Since we're splitting on spaces between words, this will attach punctuation marks and the like.
+        // This is something we actually want! We can check for "end" words and stuff later.
+        // Example: ['Oh,', 'man.', 'I\'m', 'really', 'hungry!']
+        var words = content[currentLine].split(' ');
+
+        // We want our robot to sound intelligent, we track words that start each sentence (new line).
+        // There are some cases where this currently falls apart. The above example is good. The only
+        // startword that would be pushed to the array would be "Oh" and not "I'm", since we're not checking
+        // for where sentences get split up.
         this.startwords.push(words[0]);
 
+        // Now, we're going to iterate over all the words we've found in our currentLine,
+        // which is all the stuff we pushed in the new words array up above. 
+        // Let's start adding real data to our dictionary!
         for (var j = 0; j < words.length - 1; j++) {
+
+            // TODO: I forget what this does...
             var checkValid = true; // Flag to check whether a value is true or false.
 
-            // Check if word is a hashtag so that we can add it to a special array for later use.
+            // This specifically checks if the current word is a hashtag,
+            // so that we can add it to a special array for later use.
+            // For example, maybe we'll want to attach completely random hashtags
+            // to our sentences. #blessed
             if (words[j].substring(0, 1) === "#") {
               var tempHashtag = words[j];
               tempHashtag = tempHashtag.replace(/[\W]*$/g,''); // Remove any cruft found at end of hashtag.
@@ -27,6 +51,21 @@ module.exports = {
 
             // Make sure our word isn't an empty value. No one likes that. Not even you.
             if (words[j] !== '' && checkValid === true) {
+
+              // New method for tracking words...
+              // Check if the word even exists in our array.
+              // If not, let's add it and then build in our template.
+              if (!this.dictionary[words[j]]) {
+                this.dictionary[words[j]] = {
+                  count: 1,
+                  next_words: [],
+                  prev_words: [],
+                };
+              } else {
+                // Word already exists in our dictionary. Let's update some stuff!
+                this.dictionary[words[j]].count++;
+              }             
+
               var curWord = {
                 first_word: words[j],
                 word_pair: words[j] + ' ' + this.checkExists(words[j+1]),
@@ -49,6 +88,7 @@ module.exports = {
     //console.log('STARTWORDS: ', this.startwords);
     //console.log(this.wordpairs);
     console.log('TOTAL WORDS: ', countWords);
+    console.log('DICTIONARY: ', this.dictionary);
     return this.wordpairs;
   },
 
@@ -56,13 +96,21 @@ module.exports = {
   // TODO: We're probably returning unnecessary space if a word doesn't exist. Need to fix.
   checkExists: function(value) {
     if (!value) {
-      return '';
+      //return '';
     } else {
       return value;
     }
   },
 
   checkSentenceEnd: function(word) {
+
+    // Sometimes, an undefined value is passed in here and we need to properly handle it.
+    // Let's just return from the function and do nothing.
+    if (word === undefined) {
+      console.log('checkSentenceEnd, Nothing Found: ', word);
+      return false;
+    }
+
     var endMarks = ['.', '!', '?'];
     var endMark = word.slice(-1);
     if (endMarks.indexOf(endMark) != -1) {
