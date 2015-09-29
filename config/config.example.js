@@ -35,9 +35,39 @@ module.exports = {
     // we'll multiply by 1,000 in another function.    
     postInterval: 300,
 
-    // Tweet on starup? This will compose a tweet the moment 
+    // Tweet on startup? This will compose a tweet the moment 
     // the bot is first run, rather than wait for the full interval.
     tweetOnStartup: true,
+
+    // Recorded time of the last tweet the robot received in the stream,
+    // so we can check things and restart the stream, if needed. This will
+    // be stored as a Unix Timestamp.
+    lastTweetReceivedTime: 0,
+
+    // If true, allows the bot to monitor the live Twitter stream
+    // (and enables everything below).
+    // Default: true
+    watchStream: true; 
+    
+    // If true, respond to DMs. False prevents it from responding to DMs.
+    // TODO: Fix this.
+    respondDMs: false, 
+
+    // If true, have the bot randomly reply to tweets that appear in it's stream.
+    randomReplies: false, 
+    
+    // If true, we can repspond to replies!
+    respondReplies: true,
+    
+    // If true, let this post to Twitter. 
+    // False prevents it from outputting to Twitter.
+    postTweets: false, 
+    
+     // If true, allow the bot to favorite tweets based on our interests up above.
+    getFavs: true,
+    
+    // If true, allow bot to follow new users.
+    followUsers: true,   
   },
 
   // Configure your robot's interests!
@@ -67,11 +97,17 @@ module.exports = {
     */
     addHashtags: 0.1,
 
+    /* Check whether or not our bot is allowed to randomly reply to other
+    ** users on its own. 
+    ** Default: false
+    */
+    randomReplies: false,
+
     /* Percent chance that the bot will randomly reply
     *  to tweets that pop up in its stream. e.g., .05 = 5%
     *  You'll probably want to keep random replies at 0.
     */
-    randomReplies: 0,
+    randomRepliesChance: 0.05,
 
   }
 

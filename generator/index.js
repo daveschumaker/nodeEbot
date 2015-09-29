@@ -58,6 +58,7 @@ module.exports = {
               // Check if the word even exists in our array.
               // If not, let's add it and then build in our template.
               if (!this.dictionary[words[j]]) {
+                countWords++;
                 this.dictionary[words[j]] = {
                   count: 1,
                   next_words: [],
@@ -82,7 +83,7 @@ module.exports = {
                 prev_word: this.checkExists(words[j-1]),
                 //count: 1, // Deprecated: Was originally using this to potentially rank keywords, but this isn't needed now.
               };
-              countWords++;
+              //countWords++;
               this.wordpairs.push(curWord);
             }
         }
