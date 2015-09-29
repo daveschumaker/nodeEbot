@@ -1,0 +1,4 @@
+Rename this file to tweets.txt
+Make sure each sentence you want analyzed is on a new line.
+Add anything you want parsed and analyzed to this text file.
+You should be ready to go!

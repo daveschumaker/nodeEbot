@@ -1,6 +1,6 @@
 # NodeEbot
-
-_Current Version: 0.1.4_
+## v2.0.0 WORK IN PROGRESS...
+_Current Version: 0.1.1_
 
 This is NodeEBot (pronounced as _"nodey bot"_ or even _"naughty bot"_, if you prefer). It stands for **Node** **E**-books **Bot**.
 
@@ -8,6 +8,16 @@ This is NodeEBot (pronounced as _"nodey bot"_ or even _"naughty bot"_, if you pr
 It's a Nodejs package for creating Twitter bots which can write their own tweets and interact with other users (by favoriting, replying, and following). This project draws heavy inspiration from the [twitter_ebooks](https://github.com/mispy/twitter_ebooks) gem for Ruby.
 
 You can see two examples of this bot in action at [@daveleeeeee](https://twitter.com/daveleeeeee) and [@roboderp](https://twitter.com/roboderp).
+
+## Quick Setup
+
+You can run this app and start generating sentences without needing to have Twitter API credentials. Rename tweets.sample.txt to tweets.txt and start adding your own source material to this file. For best results, use one file per line.
+
+Run the application like so...
+
+```
+node bot.js
+```
 
 ## Installation and Usage
 
@@ -41,6 +51,7 @@ robotName = "xxxx";
 
 Once that's done, the bot is **almost** ready to go. You can modify a few other settings that influence how chatty the bot is, how often it will interact with other users or use random hashtags and emojis.
 
+<<<<<<< HEAD
 In order to run the bot, I use the _[forever](https://www.npmjs.com/package/forever)_ npm package. This allows us to automatically restart the server in case of a crash, as well as force restart the server in order to reload the Twitter stream (added in v 0.1.2).
 
 ## Source material
