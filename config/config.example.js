@@ -53,20 +53,23 @@ module.exports = {
     // TODO: Fix this.
     respondDMs: false, 
 
-    // If true, have the bot randomly reply to tweets that appear in it's stream.
+    // If true, have the bot randomly reply to tweets that 
+    // appear in its stream.
+    // Default: false
     randomReplies: false, 
     
     // If true, we can repspond to replies!
     respondReplies: true,
     
-    // If true, let this post to Twitter. 
+    // If true, let the robot post to Twitter. 
     // False prevents it from outputting to Twitter.
     postTweets: false, 
     
-     // If true, allow the bot to favorite tweets based on our interests up above.
+     // If true, allow the bot to favorite tweets
+     // based on the robot's personality settings (see below).
     getFavs: true,
     
-    // If true, allow bot to follow new users.
+    // If true, allow bot to follow new users that have followed it.
     followUsers: true,   
   },
 
