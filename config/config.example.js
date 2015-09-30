@@ -47,7 +47,7 @@ module.exports = {
     // If true, allows the bot to monitor the live Twitter stream
     // (and enables everything below).
     // Default: true
-    watchStream: true; 
+    watchStream: true,
     
     // If true, respond to DMs. False prevents it from responding to DMs.
     // TODO: Fix this.
@@ -70,7 +70,15 @@ module.exports = {
     getFavs: true,
     
     // If true, allow bot to follow new users that have followed it.
-    followUsers: true,   
+    followUsers: true,
+
+    /**
+    ** Create an array of replies that we'll wipe out every so often.
+    ** Basically, if we've replied to the same user more than X amount
+    ** of times within a certain time frame, let's not reply to them
+    ** anymore for a bit in order to keep everyone's sanity.
+    **/
+    trackReplies: [], 
   },
 
   // Configure your robot's interests!
@@ -111,7 +119,5 @@ module.exports = {
     *  You'll probably want to keep random replies at 0.
     */
     randomRepliesChance: 0.05,
-
   }
-
 };
