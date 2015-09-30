@@ -1,8 +1,10 @@
 // TEXT GENERATOR!
 module.exports = {
+
   // Keep track of all our word stats
   dictionary: {}, // This is a new object I'm using to generate sentences in a more efficient manner than the wordpairs array.
   startwords: [], // Words that start a sentence.
+  stopwords: [], // Stop words.
   hashtags: [], // Automatically detect any hashtags that we use.
   wordpairs: [], // This is where we'll store our dictionary of word pairs
   popularKeywords: [], // Track popular keywords that the bot may be interested in based on our tweet history.
@@ -238,7 +240,7 @@ module.exports = {
   makeTweet: function (min_length) {
     var keepGoing = true; // Basically, we want to keep generating a sentence until we either run out of words or hit a punctuation mark.
     var startWord = this.choice(this.startwords); // Get initial start word.
-    //console.log('Start Word: ' + startWord);
+    console.log('Start Word: ' + startWord);
     
     var initialWords = this.choosePairs(startWord); // Choose initial word pair.
     //console.log('INITIAL WORDS: ', initialWords);
@@ -294,6 +296,8 @@ module.exports = {
     //console.log(tweet);
     var wholeTweet = tweet.join(' ');
 
+    console.log('WHOLE TWEET BEFORE CLEANUP: ', wholeTweet);
+
     // Clean up any whitespace added attached to the end up the tweet.
     wholeTweet = wholeTweet.replace(/[ ]*$/g,'');
 
@@ -307,7 +311,7 @@ module.exports = {
     // Detect if this happens and rerun the script again.
     if (wholeTweet.length === 0) {
       //console.log('Error: Zero length sentence detected.');
-      wholeTweet = make_tweet(min_length);
+      wholeTweet = this.makeTweet(min_length);
     }
 
     return wholeTweet;
@@ -323,6 +327,169 @@ module.exports = {
     //console.log('SEARCH OBJECT VALUE:', value);
     //console.log('SEARCH OBJECT RESULTS:', result);
     return result;
-  }
+  },
+
+  // Find all keywords in our word pair dictionary
+  getKeywords: function(word) {
+    var checkStopword = word.toLowerCase().replace(/[\W]*$/g,''); // Remove any cruft found at end of word.
+
+    // Before we begin, let's check if the word is a stopword found in
+      // our stopwords.txt file. If so, we're going to ignore it.
+      if (this.stopwords.indexOf(checkStopword) == -1 && word !== '') {
+        var result = this.wordpairs.filter(function( obj ) {
+            //tempIndex = wordpairs.indexOf(obj);
+            //console.log(wordpairs.indexOf(obj));
+            return obj.first_word == word;
+        });     
+
+        //console.log('Total results: ' + result.length);
+        //console.log(result);
+
+        return [result.length, word, result];
+      } else {
+        //console.log('Word in stopword list: ' + word);
+        return '';
+      }
+  },
+
+  makeSentenceFromKeyword: function(replystring) {  
+    var allWords = []; // Our array of all words.
+    var mySentence = []; // Store words we find in this array.
+    allWords = replystring.split(' ');
+    //console.log(allWords); // Debugging
+
+    // Pass in proper context to the calculateHighest function
+    var context = this;
+
+    // Calculate highest keyword
+    function calculateHighest(allWords) {
+      var count = 0;
+      var highestWord;
+      var resultArray = [];
+
+      for (var i = 0; i < allWords.length; i++) {
+        //console.log('Getting results for: ' + feederArray[i]);
+        var result = context.getKeywords(allWords[i]);
+        if (result[0] > count) {
+          count = result[0];
+          highestWord = result[1];
+          resultArray = result[2];
+        }
+      }
+
+      //console.log('\nHighest ranked word in corpus is: \'' + highestWord + '\' and was found ' + count + ' times.');
+      //console.log(resultArray); 
+      return resultArray;
+    }
+
+    //console.log('Testing ranking:');
+    //console.log(calculateHighest(allWords));
+    
+    var keywordObject = calculateHighest(allWords);
+    
+    var keepGoing = true; // Keep generating our sentence until we no longer have to.
+    //console.log(obj);
+    // Choose random result
+    var result = keywordObject[Math.floor(Math.random() * keywordObject.length)];
+    
+    //console.log(result);
+
+    // Error checking to handle undefined / unfound words.
+    if (typeof result == 'undefined') {
+      //console.log('\nError: No matching keywords found.');
+      return;
+    }
+
+    var prev_word = result.prev_word;
+    var cur_word = result.first_word;
+
+    // Add intial words to array.
+    mySentence.push(prev_word, cur_word);
+
+    // First part of our "Build Sentence from Keyword" Function
+    // This generates everything BEFORE our keyword.
+    while (keepGoing === true) {
+      var cur_wordpair = mySentence[0] + ' ' + mySentence[1];
+      var tempArray = chooseRandomPair(findWordPair(cur_wordpair));
+
+      // Check if an error condition exists and end things
+      if (tempArray[3] == 'notfound') {
+        console.log('\nError: No keyword pairs found');
+        return;
+      }
+
+      if (tempArray[0] === '') {
+        keepGoing = false;
+      } else {
+        mySentence.unshift(tempArray[0]);
+      }
+    }
+
+    // Second part of our "Build Sentence from Keyword" Function
+    // This generates everything AFTER our keyword.
+    keepGoing = true; // Reset our keep going variable.
+    while (keepGoing === true) {
+      var arrayLength = mySentence.length - 1;
+      var cur_wordpair = mySentence[arrayLength - 1] + ' ' + mySentence[arrayLength];
+      var tempArray = chooseRandomPair(findWordPair(cur_wordpair));
+
+      // Check if an error condition exists and end things
+      if (tempArray[3] == 'notfound') {
+        console.log('\nError: No keyword pairs found');
+        return;
+      }
+
+      if (tempArray[2] === '') {
+        keepGoing = false;
+      } else {
+        mySentence.push(tempArray[2]);
+      }
+    }  
+
+    // Run this again until we have a sentence under 124 characters.
+    // This is because the max length of Twitter username is 15 characters + 1 space.
+    // TODO: Imporve this so we can count the username we're replying to.
+
+    if (mySentence.join(' ').length > 124) {
+      makeSentenceFromKeyword(replystring);
+    } else {
+      // TODO: Better error handling when we return no object.
+      //console.log('\nGenerated response: ' + allWords.join(' '));
+      //console.log('(' + allWords.join(' ').length + ' characters.)');   
+      
+      var returnSentence = mySentence.join(' ');
+
+      if (typeof returnSentence == 'undefined') {
+        console.log('\nError: No valid replies found');
+        return;
+      } else {
+        return mySentence.join(' ');
+      }
+    }
+  },
+
+  // Make sure our function spits out phrases less than a certain length.
+  twitterFriendly: function (reply, username) {
+    var new_tweet;
+    if (reply) {
+      username = '@' + username + ' ';
+    } else {
+      username = '';
+    }
+
+    do {
+      var randomLength = Math.floor((Math.random() * 20) + 10); // Random length between 10 and 20 words.
+      new_tweet = this.makeTweet(randomLength);
+      new_tweet = username + new_tweet + attachHashtag(new_tweet.length); // Randomly add a hashtag
+      new_tweet = new_tweet + attachEmoji(new_tweet.length); // Randomy add an emoji
+
+    } while (new_tweet.length > 140);
+
+    // TODO: This is a stupid, hacky way to fix weird messages that only say "RT" every so often.
+    if (new_tweet == "RT") {
+      twitterFriendly(reply, username);
+    }
+    return new_tweet;
+  },
 
 };

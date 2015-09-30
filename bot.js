@@ -31,6 +31,8 @@ fs = Promise.promisifyAll(fs);
 generator = Promise.promisifyAll(generator);
 
 /////////////////////
+// Process stopwords.
+generator.stopwords = fs.readFileSync('./data/stopwords.txt').toString().split("\n");
 
 // Filename to source or tweets and other content from?
 tweetFile = 'tweets.txt';
