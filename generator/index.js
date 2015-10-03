@@ -1,4 +1,7 @@
 // TEXT GENERATOR!
+
+var config = require('../config');
+
 module.exports = {
 
   // Keep track of all our word stats
@@ -238,9 +241,14 @@ module.exports = {
   },
 
   makeTweet: function (min_length) {
+    if (this.startwords === undefined || this.startwords.length === 0) {
+      return;
+    }
+
     var keepGoing = true; // Basically, we want to keep generating a sentence until we either run out of words or hit a punctuation mark.
     var startWord = this.choice(this.startwords); // Get initial start word.
-    console.log('Start Word: ' + startWord);
+    
+    //console.log('Start Word: ' + startWord);
     
     var initialWords = this.choosePairs(startWord); // Choose initial word pair.
     //console.log('INITIAL WORDS: ', initialWords);
@@ -295,8 +303,6 @@ module.exports = {
 
     //console.log(tweet);
     var wholeTweet = tweet.join(' ');
-
-    console.log('WHOLE TWEET BEFORE CLEANUP: ', wholeTweet);
 
     // Clean up any whitespace added attached to the end up the tweet.
     wholeTweet = wholeTweet.replace(/[ ]*$/g,'');
@@ -410,7 +416,7 @@ module.exports = {
     // This generates everything BEFORE our keyword.
     while (keepGoing === true) {
       var cur_wordpair = mySentence[0] + ' ' + mySentence[1];
-      var tempArray = chooseRandomPair(findWordPair(cur_wordpair));
+      var tempArray = this.chooseRandomPair(this.findWordPair(cur_wordpair));
 
       // Check if an error condition exists and end things
       if (tempArray[3] == 'notfound') {
@@ -431,7 +437,7 @@ module.exports = {
     while (keepGoing === true) {
       var arrayLength = mySentence.length - 1;
       var cur_wordpair = mySentence[arrayLength - 1] + ' ' + mySentence[arrayLength];
-      var tempArray = chooseRandomPair(findWordPair(cur_wordpair));
+      var tempArray = this.chooseRandomPair(this.findWordPair(cur_wordpair));
 
       // Check if an error condition exists and end things
       if (tempArray[3] == 'notfound') {
@@ -480,8 +486,8 @@ module.exports = {
     do {
       var randomLength = Math.floor((Math.random() * 20) + 10); // Random length between 10 and 20 words.
       new_tweet = this.makeTweet(randomLength);
-      new_tweet = username + new_tweet + attachHashtag(new_tweet.length); // Randomly add a hashtag
-      new_tweet = new_tweet + attachEmoji(new_tweet.length); // Randomy add an emoji
+      new_tweet = username + new_tweet + this.attachHashtag(new_tweet.length); // Randomly add a hashtag
+      new_tweet = new_tweet + this.attachEmoji(new_tweet.length); // Randomy add an emoji
 
     } while (new_tweet.length > 140);
 
@@ -490,6 +496,131 @@ module.exports = {
       twitterFriendly(reply, username);
     }
     return new_tweet;
+  },
+
+  /*******
+  *
+  * BUILD SENTENCE FROM KEYWORD?
+  *
+  */
+  chooseRandomPair: function (obj) {
+
+    if (typeof obj === 'undefined') {
+      return [''];
+    }
+
+    var result = obj[Math.floor(Math.random() * obj.length)];
+
+    // Check if any results are found.
+    if (typeof result === 'undefined') {
+      //console.log('Error: No object');
+      var prev_word = '';
+      var cur_word = '';
+      var next_word = '';
+      var error = 'notfound';
+
+    } else if (typeof result.prev_word !== 'undefined') {
+      var prev_word = result.prev_word;
+      var cur_word = result.first_word;
+      var next_word = result.next_word;
+    } else {
+      var prev_word = '';
+    }
+    
+
+
+    // If we detect an end of sentence in previous word, let's just stop right there.
+    if (prev_word.slice(-1) == '.' || prev_word.slice(-1) == '!' || prev_word.slice(-1) == '?') {
+      //console.log('End sentence detected');
+      prev_word = '';
+    }
+
+    // Returns the following array
+    // ['prev_word', 'first_word', 'next_word']
+    return [prev_word, cur_word, next_word, error];
+  },
+
+  findWordPair: function(string) {
+    var getResult = this.searchObject(this.wordpairs, 'word_pair', string);
+    //console.log( getResult );
+    return getResult;
+  },
+
+  // Random add a hashtag to the end of our tweet.
+  attachHashtag: function(tweetlength) {
+    var gethashtag;
+    var x = Math.random(); // Generate random number to determine whether we add a hashtag or not
+    if (x <= config.personality.addHashtags) {
+      // Pick a random emoji from our array
+      gethashtag = this.hashtags[Math.floor(Math.random()*this.hashtags.length)];
+    
+      // Fix error checking when hashtags might not exist.
+      if (typeof gethashtag == 'undefined') {
+        gethashtag = '';
+      }
+
+      // Check if we should be ignoring this hashtag before we include it.
+      if (ignoredHashtags.indexOf(gethashtag.toLowerCase()) != -1) {
+        //console.log('Ignoring the following hashtag: ' + gethashtag);
+        gethashtag = '';
+      } else if (typeof gethashtag == 'undefined') {
+        console.log('\nUndefined hashtag detected');
+        gethashtag = '';
+      } else {
+        // Add padding to hashtag
+        gethashtag = ' ' + gethashtag;
+      }
+
+    } else {
+      gethashtag = '';
+    } 
+
+
+    if (tweetlength < 120) {
+      return gethashtag;
+    }  
+  },
+
+  // Let's randomly include an emoji at the end of the tweet.
+  attachEmoji: function(tweetlength) {
+    var emoji;
+    var emojis = [
+      " 💩💩💩",
+      " 😍😍",
+      " 💩",
+      " 😐",
+      " 😝",
+      " 😖",
+      " 😎",
+      " 😘",
+      " 😍",
+      " 😄",
+      " 👍",
+      " 👎",
+      " 👊",
+      " 🌟",
+      " 🌟🌟🌟",
+      " 😵",
+      " 😡",
+      " 🙀",
+      " 🍺",
+      " ❤",
+      " 💔",
+      " 🏃💨 💩"
+    ];
+
+    var x = Math.random(); // Generate random number to determine whether we show emoji or not
+    if (x <= config.personality.addEmojis) {
+      // Pick a random emoji from our array
+      emoji = emojis[Math.floor(Math.random()*emojis.length)];
+    } else {
+      emoji = '';
+    }
+
+
+    if (tweetlength < 130) {
+      return emoji;
+    }
   },
 
 };

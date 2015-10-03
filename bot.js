@@ -30,6 +30,16 @@ var utils = require('./utilities');
 fs = Promise.promisifyAll(fs);
 generator = Promise.promisifyAll(generator);
 
+///// DEBUG STUFF
+var fakeTweet = {
+  id_str: 12345,
+  text: '@Roboderp This is a Dodgers sample tweet to analyze!',
+  user: {
+    screen_name: 'fakeuser',
+  }
+};
+
+
 /////////////////////
 // Process stopwords.
 generator.stopwords = fs.readFileSync('./data/stopwords.txt').toString().split("\n");
@@ -55,11 +65,14 @@ fs.readFileAsync(tweetFile)
 .then(function(data){
   var newTweet = generator.makeTweet(140);
   tweet.postNewTweet(newTweet);
-  console.log('JUST TWEETED!\n', utils.currentTime(), newTweet);
+  //console.log('JUST TWEETED!\n', utils.currentTime(), newTweet);
+  //tweet.checkReply(fakeTweet);
 
-  // setInterval(function() {
-  //   console.log(utils.currentTime(), generator.makeTweet(140) + '');
-  // }, 500);  
+  setInterval(function() {
+    newTweet = generator.makeTweet(140);
+    tweet.postNewTweet(newTweet);
+    console.log(utils.currentTime(), newTweet + '');
+  }, 90000);  
   
   //return generator.makeTweet(140);
 });

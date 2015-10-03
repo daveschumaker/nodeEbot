@@ -37,18 +37,22 @@ module.exports = {
           // Update time of last tweet that we received so we can check if we've dropped the streaming connection.
           config.settings.lastTweetReceivedTime = Math.floor(Date.now() / 1000);
 
-          // Look at contents of the tweet and determine if we should favorite it.
-          if (config.settings.canFavoriteTweets) {
-            // TODO: THIS CONTEXT ISSUE!
-            context.checkInterests(tweet); // Potentially favorite tweet based on interests of our robot.
+          // TODO: Properly handle actions that involve a tweet being deleted. If so, we don't want to call the stuff below.
+          if (tweet.delete) {
+            console.log('Detected deletion request from Twitter API...');
+          } else {
+            // Look at contents of the tweet and determine if we should favorite it.
+            if (config.settings.canFavoriteTweets) {
+              // TODO: THIS CONTEXT ISSUE!
+              //context.checkInterests(tweet); // Potentially favorite tweet based on interests of our robot.
+            }
+            
+            // Look at Tweet and determine if it's a reply to our robot.
+            if (tweet.id !== null) {
+              //context.checkReply(tweet);
+            }            
+            console.log(tweet);
           }
-          
-          // Look at Tweet and determine if it's a reply to our robot.
-          if (tweet.id !== null) {
-            //context.checkReply(tweet);
-          }
-
-          //console.log(tweet);
         });
 
         // Check if we want to destroy the stream
@@ -175,7 +179,6 @@ module.exports = {
       var tweetText = tweet.text.toLowerCase();
 
       config.personality.robotInterests.forEach(function (element) {
-        console.log('Interest: ', element);
         var tempInterest = element;
         tempInterest = tempInterest.toLowerCase();
 
@@ -250,14 +253,14 @@ module.exports = {
 
 /////////
 // Object to simulate a fake tweet object so we can check replies and favorites.
-var fakeTweet = {
-  id_str: 12345,
-  text: '@Roboderp This is a random sample tweet to analyze!',
-  user: {
-    screen_name: 'fakeuser',
-  }
-};
+// var fakeTweet = {
+//   id_str: 12345,
+//   text: '@Roboderp This is a random sample tweet to analyze!',
+//   user: {
+//     screen_name: 'fakeuser',
+//   }
+// };
 
-module.exports.checkReply(fakeTweet);
+//module.exports.checkReply(fakeTweet);
 
 //module.exports.watchStream();
