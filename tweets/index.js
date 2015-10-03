@@ -43,15 +43,14 @@ module.exports = {
           } else {
             // Look at contents of the tweet and determine if we should favorite it.
             if (config.settings.canFavoriteTweets) {
-              // TODO: THIS CONTEXT ISSUE!
-              //context.checkInterests(tweet); // Potentially favorite tweet based on interests of our robot.
+              context.checkInterests(tweet); // Potentially favorite tweet based on interests of our robot.
             }
             
             // Look at Tweet and determine if it's a reply to our robot.
             if (tweet.id !== null) {
               //context.checkReply(tweet);
             }            
-            console.log(tweet);
+            //console.log(tweet);
           }
         });
 
@@ -181,13 +180,13 @@ module.exports = {
       config.personality.robotInterests.forEach(function (element) {
         var tempInterest = element;
         tempInterest = tempInterest.toLowerCase();
-
+        //console.log('TWEET ID: ', tweetID);
         // If one of our interests is found in the text of the tweet AND our robot wasn't the one who tweeted it, let's favorite it.
         if (tweetText.indexOf(tempInterest) !== -1 && tweetUsername.toLowerCase() !== config.settings.robotName.toLowerCase()) {
           console.log('\nFavoriting the following tweet from @' + tweetUsername + ' because it mentions \'' + tempInterest + '\':');
           console.log(tweet.text);
 
-          this.client.post('favorites/create', {id: tweetID},  function(error, tweet, response){
+          client.post('favorites/create', {id: tweetID},  function(error, tweet, response){
             if(error) {
               console.log('Error favoriting tweet. Possible API rate limit encountered. Please wait a few moments.');
               console.log(error);
