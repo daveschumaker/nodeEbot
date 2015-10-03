@@ -170,7 +170,8 @@ module.exports = {
   // Check tweet when it comes it to see if it matches any of our interests.
   // If so, the robot will favorite the tweet.
   // TODO: Let the robot choose between retweeting or favoriting (or both!)
-  // TODO: This isn't currently working.
+  // TODO: Make sure robot can only favorite a particular tweet once. Might need some sort
+  // of object or array to properly handle this.
   checkInterests: function (tweet) {
     if (tweet.id !== null) {
       var tweetID = tweet.id_str;
