@@ -31,13 +31,13 @@ fs = Promise.promisifyAll(fs);
 generator = Promise.promisifyAll(generator);
 
 ///// DEBUG STUFF
-var fakeTweet = {
-  id_str: 12345,
-  text: '@Roboderp This is a Dodgers sample tweet to analyze!',
-  user: {
-    screen_name: 'fakeuser',
-  }
-};
+// var fakeTweet = {
+//   id_str: 12345,
+//   text: '@Roboderp This is a Dodgers sample tweet to analyze!',
+//   user: {
+//     screen_name: 'fakeuser',
+//   }
+// };
 
 
 /////////////////////

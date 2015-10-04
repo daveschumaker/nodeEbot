@@ -37,9 +37,9 @@ module.exports = {
           // Update time of last tweet that we received so we can check if we've dropped the streaming connection.
           config.settings.lastTweetReceivedTime = Math.floor(Date.now() / 1000);
 
-          // TODO: Properly handle actions that involve a tweet being deleted. If so, we don't want to call the stuff below.
+          // This handles actions that involve a tweet being deleted. If so, we don't want to call the stuff below.
           if (tweet.delete) {
-            console.log('Detected deletion request from Twitter API...');
+            //console.log('Detected deletion request from Twitter API...');
           } else {
             // Look at contents of the tweet and determine if we should favorite it.
             if (config.settings.canFavoriteTweets) {
@@ -48,7 +48,7 @@ module.exports = {
             
             // Look at Tweet and determine if it's a reply to our robot.
             if (tweet.id !== null) {
-              //context.checkReply(tweet);
+              context.checkReply(tweet);
             }            
             //console.log(tweet);
           }
@@ -112,7 +112,7 @@ module.exports = {
         console.log(tweet.text);
         
 
-        //this.writeReply(replyUsername, replyID, tweet.text);
+        this.writeReply(replyUsername, replyID, tweet.text);
       }
     }
 
@@ -226,7 +226,8 @@ module.exports = {
     } else {
 
       // Wrapping everything in a timeout function so that we don't reply instantaneously
-      var randomDelay = Math.floor((Math.random() * 2) + 1); // Random delay between 1 and 15 seconds
+      var randomDelay = Math.floor((Math.random() * 5) + 1); // Random delay between 1 and 15 seconds
+      var context = this;
       setTimeout(function () {
         var replyTweet;
 
@@ -244,9 +245,20 @@ module.exports = {
         
         console.log('\nReplying to user @' + username + ':');
         console.log(replyTweet);
-        //if (respondReplies) sendReply(replyTweet,replyID); 
+        if (config.settings.respondReplies) context.sendReply(replyTweet,replyID); 
       }, (randomDelay * 1000));
     }
+  },
+
+  // Send a reply.
+  // TODO: Merge this with the send a tweet function above.
+  sendReply: function(send_msg, replyID) {
+    client.post('statuses/update', {status: send_msg, in_reply_to_status_id: replyID},  function(error, tweet, response){
+      if(error) {
+        console.log('Error posting reply. Possible API rate limit encountered. Please wait a few moments');
+        //console.log(error);
+      }
+    });
   },
 
 };

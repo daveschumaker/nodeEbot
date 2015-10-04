@@ -560,7 +560,7 @@ module.exports = {
       }
 
       // Check if we should be ignoring this hashtag before we include it.
-      if (ignoredHashtags.indexOf(gethashtag.toLowerCase()) != -1) {
+      if (config.settings.ignoredHashtags.indexOf(gethashtag.toLowerCase()) !== -1) {
         //console.log('Ignoring the following hashtag: ' + gethashtag);
         gethashtag = '';
       } else if (typeof gethashtag == 'undefined') {
