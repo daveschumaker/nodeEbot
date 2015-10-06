@@ -38,8 +38,6 @@ module.exports = {
     // robot interests array from config component into a local object.
     this.mapInterests();
 
-    console.log(interestsObject);
-
     if (config.settings.monitorStream) {
       client.stream('user', function(stream){
         console.log('Listening to stream...');
@@ -190,30 +188,30 @@ module.exports = {
   // of object or array to properly handle this.
   checkInterests: function (tweet) {
     if (tweet.id !== null) {
-      // if (!tweet.user.screen_name) {
-      //   console.log('Trying to favorite a tweet. Undefined username.');
-      //   return;
-      // }
-
-      //if (tweetUsername.toLowerCase() !== config.settings.robotName.toLowerCase())
-
       var tweetID;
       var tweetUsername;
       var tweetText;
 
-      //console.log("\n\n\n---------------------\nINTEREST DATA\n", tweet);
+      tweetID = tweet.id_str;
+      tweetUsername = tweet.user.screen_name;
+      tweetText = tweet.text.toLowerCase();
 
-      // if (tweet.retweeted_status) {
-      //   //console.log('Favoriting retweet...');
-      //   tweetID = tweet.retweeted_status.id_str;
-      //   tweetUsername = tweet.retweeted_status.user.screen_name;
-      //   tweetText = tweet.retweeted_status.text.toLowerCase();
-      // } else {
-        tweetID = tweet.id_str;
-        tweetUsername = tweet.user.screen_name;
-        tweetText = tweet.text.toLowerCase();
-      // }
+      // Check if this particular tweet is a retweet.
+      // If so, we need to slightly change how data is stored.
+      if (tweet.retweeted_status) {
+        //console.log('Favoriting retweet...');
+        tweetID = tweet.retweeted_status.id_str;
+        tweetUsername = tweet.retweeted_status.user.screen_name;
+        tweetText = tweet.retweeted_status.text.toLowerCase();
+      }
 
+      // Check if the tweet coming through is from our own robot.
+      // If so, abort everything below, because we don't care anymore.
+      if (config.settings.robotName.toLowerCase() === tweetUsername.toLowerCase()) {
+        //console.log('Ignoring our own tweet.');
+        return;
+      }
+     
       // Base condition for our robot. Change to true if we've found
       // a matching interest. This will prevent us from trying to
       // favorite a tweet multiple times.
@@ -238,7 +236,9 @@ module.exports = {
       tweetTextArray.some(isRobotInterest);
 
       if (foundInterest) {
-        console.log('\nFavoriting the following tweet from @' + tweetUsername + ' because it mentions \'' + tempInterest + '\':');
+        var tweetType = 'tweet';
+        if (tweet.retweeted_status) tweetType = 'retweet';
+        console.log('\nFavoriting the following ' + tweetType + ' from @' + tweetUsername + ' because it mentions \'' + tempInterest + '\':');
         console.log(tweet.text);
 
         client.post('favorites/create', {id: tweetID},  function(error, tweet, response){

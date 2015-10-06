@@ -66,7 +66,7 @@ fs.readFileAsync(tweetFile)
     newTweet = generator.makeTweet(140);
     tweet.postNewTweet(newTweet);
     console.log(utils.currentTime(), newTweet + '');
-  }, 90000);  
+  }, 350000);  
   
   //return generator.makeTweet(140);
 });
