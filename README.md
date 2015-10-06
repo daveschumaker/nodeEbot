@@ -1,6 +1,5 @@
 # NodeEbot
-## v2.0.0 WORK IN PROGRESS...
-_Current Version: 0.1.1_
+_Current Version: 0.2.0
 
 This is NodeEBot (pronounced as _"nodey bot"_ or even _"naughty bot"_, if you prefer). It stands for **Node** **E**-books **Bot**.
 
@@ -29,7 +28,7 @@ To run, copy the project into your preferred directory and then install the requ
 npm install
 ```
 
-You can edit various configuration settings in the bot.js file. Before you can begin you'll need to have Twitter API credentials which can be setup [right here](https://apps.twitter.com/). Once you have your consumer API key and secret as well as your access token and secret, add them to the top of the bot.js file:
+You can edit various configuration settings in the bot.js file. Before you can begin you'll need to have Twitter API credentials which can be setup [right here](https://apps.twitter.com/). Once you have your consumer API key and secret as well as your access token and secret, add them to the config.js file found in the config folder:
 
 ```
 // Twitter API configuration
@@ -51,8 +50,7 @@ robotName = "xxxx";
 
 Once that's done, the bot is **almost** ready to go. You can modify a few other settings that influence how chatty the bot is, how often it will interact with other users or use random hashtags and emojis.
 
-<<<<<<< HEAD
-In order to run the bot, I use the _[forever](https://www.npmjs.com/package/forever)_ npm package. This allows us to automatically restart the server in case of a crash, as well as force restart the server in order to reload the Twitter stream (added in v 0.1.2).
+In order to run the bot, I use the _[forever](https://www.npmjs.com/package/forever)_ npm package. This allows us to automatically restart the server in case of a crash.
 
 ## Source material
 
@@ -79,7 +77,6 @@ If you want to run multiple bots for different Twitter accounts, copy this proje
 
 ## Future things to do.
 
-* Better modularization of our script. Right now it's in one ginormous .js file.
 * Turn it into a proper npm module. 
 * Better regex handling to clean up source material (e.g., links, usernames, etc
 * Send direct messages back to users who DM our robot.
@@ -90,9 +87,9 @@ If you want to run multiple bots for different Twitter accounts, copy this proje
 
 ## Changelog
 
-### v 0.1.4 (2015/05/07)
+### v 0.2.0 (2015/10/06)
 
-* Simple change to load and require underscore. This is going to help simplify some of my functions in future development.
+* Better modularization. Also optimized some issues with how the robot looks for interests.
 
 ### v 0.1.3 (2015/04/28)
 

@@ -7,6 +7,7 @@ var Promise = require('bluebird');
 var Twitter = require('twitter');
 var config = require('../../config');
 var generator = require('../generator');
+var utils = require('../utilities');
 
 
 // Initialize a new Twitter client using the provided API keys.
@@ -40,14 +41,10 @@ module.exports = {
 
     if (config.settings.monitorStream) {
       client.stream('user', function(stream){
-        console.log('Listening to stream...');
+        console.log('Listening to stream...\n\n');
+
+        // Start streaming data from Twitter.
         stream.on('data', function(tweet) {
-          //console.log("\n\n");
-          //console.log("==== NEW TWITTER EVENT ====");
-          //console.log(tweet); // Displays full JSON from Twitter. Useful for debugging.
-          //console.log("\n\n");
-          //if (tweet.text) { console.log('\nNew tweet: ' + tweet.text) }; // This lets us log new tweets from the stream to the console for debugging purposes.
-          
           // Update time of last tweet that we received so we can check if we've dropped the streaming connection.
           config.settings.lastTweetReceivedTime = Math.floor(Date.now() / 1000);
 
@@ -238,12 +235,12 @@ module.exports = {
       if (foundInterest) {
         var tweetType = 'tweet';
         if (tweet.retweeted_status) tweetType = 'retweet';
-        console.log('\nFavoriting the following ' + tweetType + ' from @' + tweetUsername + ' because it mentions \'' + tempInterest + '\':');
-        console.log(tweet.text);
+        console.log('\n', utils.currentTime(), 'Favoriting the following ' + tweetType + ' from @' + tweetUsername + ' because it mentions \'' + tempInterest + '\':');
+        console.log('\n',tweet.text);
 
         client.post('favorites/create', {id: tweetID},  function(error, tweet, response){
           if(error) {
-            if (error.code === 139) {
+            if (error[0].code === 139) {
               // This means we've already favorited this tweet. Ignore it.
             } else {
               console.log('Error favoriting tweet. Possible API rate limit encountered. Please wait a few moments.');
@@ -257,7 +254,6 @@ module.exports = {
 
   // Check if the user is in our ignore list. If so, we're not going to write a reply.
   checkIgnored: function(username) {
-    //TODO Case insensitive usernames.
     if (config.settings.ignoredUsers.indexOf(username.toLowerCase()) != -1) {
       return true;
     } else {
@@ -290,7 +286,6 @@ module.exports = {
       setTimeout(function () {
         var replyTweet;
 
-      //*******
       // We're going to try to reply to the user with CONTEXT.
       var myReply = generator.makeSentenceFromKeyword(replytext);
 

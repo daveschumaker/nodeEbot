@@ -121,17 +121,14 @@ module.exports = {
     // Sometimes, an undefined value is passed in here and we need to properly handle it.
     // Let's just return from the function and do nothing.
     if (word === undefined) {
-      //console.log('checkSentenceEnd, Nothing Found: ', word);
       return false;
     }
 
     var endMarks = ['.', '!', '?'];
     var endMark = word.slice(-1);
     if (endMarks.indexOf(endMark) != -1) {
-      //console.log('End punctuation found!!')
       return true;
     } else {
-      //console.log('End punctuation not found.');
       return false;
     }
   },
@@ -144,7 +141,6 @@ module.exports = {
   },
 
   choosePairs: function (firstWord, secondWord) {
-    //console.log('SECOND WORD IN choosePairs:', secondWord);
     var allResults = [];
     var resultWordPair;
     var getResult;
@@ -152,8 +148,6 @@ module.exports = {
       getResult = this.searchObject(this.wordpairs, 'first_word', firstWord);
       resultWordPair = getResult[Math.floor(Math.random() * getResult.length)];
       
-      //console.log('GET RESULTS from choosePairs 1: ', getResult);
-
       //Trying to check for a weird undefined error that sometimes happens and crashes app:
       if (typeof(resultWordPair) == "undefined") {
         //console.log('\n--== ERROR: No result returned... ==--\n')
@@ -168,12 +162,8 @@ module.exports = {
       allResults[1] = this.checkExists(resultWordPair.word_pair_array[1]);
       allResults[2] = this.checkExists(resultWordPair.next_word);
 
-      //console.log('Word_Pairs:');
-      //console.log(allResults[0] + ' ' + allResults[1] + '. __Next Word: ' + allResults[2]);
       return allResults;    
     } else if (secondWord === '') {
-      //console.log('GET RESULTS from choosePairs 2: ', getResult);
-
       // This means the second word does not exist. Uh, oh!
       //console.log('--== Second word pair not detected. ==--');
       allResults[0] = '';
@@ -182,8 +172,6 @@ module.exports = {
       allResults[3] = 'end'; // Send a flag to our sentence generation function that says no more words are detected, so stop.
       return allResults;
     } else {
-      //console.log('GET RESULTS from choosePairs 3: ', getResult);
-
       getResult = this.searchObject(this.wordpairs, 'word_pair', firstWord + ' ' + secondWord); // Change I to whatever
       resultWordPair = getResult[Math.floor(Math.random() * getResult.length)];
 
@@ -247,17 +235,12 @@ module.exports = {
 
     var keepGoing = true; // Basically, we want to keep generating a sentence until we either run out of words or hit a punctuation mark.
     var startWord = this.choice(this.startwords); // Get initial start word.
-    
-    //console.log('Start Word: ' + startWord);
-    
+        
     var initialWords = this.choosePairs(startWord); // Choose initial word pair.
-    //console.log('INITIAL WORDS: ', initialWords);
 
     var tweet = [startWord];
     tweet.push(initialWords[1]);
     tweet.push(initialWords[2]);
-
-    //console.log(tweet);
 
     while (keepGoing === true) {  
       var getNewWords = this.choosePairs(tweet[tweet.length - 2],tweet[tweet.length - 1]);
@@ -288,16 +271,6 @@ module.exports = {
     tweet = removeElements(tweet, '[pic]:');
     tweet = removeElements(tweet, '[pic]');
 
-    // Remove undesireable elements from the END of our array.
-    // TODO: Need to add this in.
-    /*
-    delete ['a'];
-    delete ['the'];
-    delete ['and'];
-    delete ['is'];
-    delete ['w/'];    
-    */    
-
     // Filter our array of words to remove ALL empty values ("", null, undefined and 0):
     tweet = tweet.filter(function(e){return e;}); 
 
@@ -316,14 +289,13 @@ module.exports = {
     // For some reason, sometimes our sentence generation returns nothing.
     // Detect if this happens and rerun the script again.
     if (wholeTweet.length === 0) {
-      //console.log('Error: Zero length sentence detected.');
       wholeTweet = this.makeTweet(min_length);
     }
 
     return wholeTweet;
   },
 
-  // I'll be honest. I kind of forget what this function does.
+  // I'll be honest. I kind of forget what this method does.
   searchObject: function (array, prop, value) {
     //console.log('SEARCH OBJECT??', array, prop, value);
     var result = array.filter(function (obj) {
@@ -362,7 +334,6 @@ module.exports = {
     var allWords = []; // Our array of all words.
     var mySentence = []; // Store words we find in this array.
     allWords = replystring.split(' ');
-    //console.log(allWords); // Debugging
 
     // Pass in proper context to the calculateHighest function
     var context = this;
