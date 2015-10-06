@@ -3,6 +3,9 @@
  *  
  */
 
+var config = require('../config');
+var tweet = require('../tweets');
+
 module.exports = {
 
   // Useful for outputting timestamps to the console for actions from our robot.
@@ -28,5 +31,20 @@ module.exports = {
     var formattedTime = year + '-' + month.substr(-2) + '-' + day.substr(-2) + ' ' + hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
 
     return formattedTime;
-  }
+  },
+
+  // Check if the Twitter stream is active. It sometimes has a nasty habit of dying.
+  // Sometimes, Twitter can drop our stream. Based on this document, 
+  // we check out lastTweetTime stamp to see if
+  // it's been longer than 90 seconds since the last Tweet. 
+  // If so, restart the stream!
+  // More info: https://dev.twitter.com/streaming/overview/connecting
+  checkStream: function() {
+    var curTime = Math.floor(Date.now() / 1000);   
+    // It's been longer than around 90 seconds since we've seen a tweet. Let's restart the stream.
+    if (Math.floor(Date.now() / 1000) - config.settings.lastTweetReceivedTime >= 90) {
+      console.log('Stream may have dropped. Restarting stream...');
+      tweet.watchStream();  
+    }
+  },
 };

@@ -38,7 +38,7 @@ module.exports = {
           config.settings.lastTweetReceivedTime = Math.floor(Date.now() / 1000);
 
           // This handles actions that involve a tweet being deleted. If so, we don't want to call the stuff below.
-          if (tweet.delete) {
+          if (tweet.delete || tweet.friends) {
             //console.log('Detected deletion request from Twitter API...');
           } else {
             // Look at contents of the tweet and determine if we should favorite it.
@@ -174,6 +174,11 @@ module.exports = {
   // of object or array to properly handle this.
   checkInterests: function (tweet) {
     if (tweet.id !== null) {
+      // if (!tweet.user.screen_name) {
+      //   console.log('Trying to favorite a tweet. Undefined username.');
+      //   return;
+      // }
+
       var tweetID = tweet.id_str;
       var tweetUsername = tweet.user.screen_name;
       var tweetText = tweet.text.toLowerCase();
