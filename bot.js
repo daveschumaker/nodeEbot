@@ -13,18 +13,11 @@ var fs = require('fs');
 var util = require('util');
 var Promise = require('bluebird');
 
-// Import configuration settings and API keys
-var config = require('./config');
-
-// Import generator for building word dictionary and
-// creating new sentences
-var generator = require('./generator');
-
-// Custom Twitter actions.
-var tweet = require('./tweets');
-
-// Helper functions
-var utils = require('./utilities');
+//////////
+var config = require('./config'); // Robot config, personality settings and API keys
+var generator = require('./components/generator'); // Compiles word dictionary and builds new sentences.
+var tweet = require('./components/tweets'); // Methods to interact with Twitter by writing and favoriting tweets and more.
+var utils = require('./components/utilities'); // Various helper functions
 
 // Create promises
 fs = Promise.promisifyAll(fs);
@@ -42,7 +35,7 @@ generator = Promise.promisifyAll(generator);
 
 /////////////////////
 // Process stopwords.
-generator.stopwords = fs.readFileSync('./data/stopwords.txt').toString().split("\n");
+generator.stopwords = fs.readFileAsync('./data/stopwords.txt').toString().split("\n");
 
 // Filename to source or tweets and other content from?
 tweetFile = 'tweets.txt';
@@ -65,6 +58,7 @@ fs.readFileAsync(tweetFile)
 .then(function(data){
   var newTweet = generator.makeTweet(140);
   tweet.postNewTweet(newTweet);
+  console.log(utils.currentTime(), newTweet + '');
   //console.log('JUST TWEETED!\n', utils.currentTime(), newTweet);
   //tweet.checkReply(fakeTweet);
 

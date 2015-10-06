@@ -1,6 +1,6 @@
 // TEXT GENERATOR!
 
-var config = require('../config');
+var config = require('../../config');
 
 module.exports = {
 

@@ -3,7 +3,7 @@
  *  
  */
 
-var config = require('../config');
+var config = require('../../config');
 var tweet = require('../tweets');
 
 module.exports = {

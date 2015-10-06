@@ -5,7 +5,7 @@
 
 var Promise = require('bluebird');
 var Twitter = require('twitter');
-var config = require('../config');
+var config = require('../../config');
 var generator = require('../generator');
 
 
@@ -179,9 +179,22 @@ module.exports = {
       //   return;
       // }
 
-      var tweetID = tweet.id_str;
-      var tweetUsername = tweet.user.screen_name;
-      var tweetText = tweet.text.toLowerCase();
+      var tweetID;
+      var tweetUsername;
+      var tweetText;
+
+      console.log("\n\n\n---------------------\nINTEREST DATA\n", tweet);
+
+      if (tweet.retweeted_status) {
+        //console.log('Favoriting retweet...');
+        tweetID = tweet.retweeted_status.id_str;
+        tweetUsername = tweet.retweeted_status.user.screen_name;
+        tweetText = tweet.retweeted_status.text.toLowerCase();
+      } else {
+        tweetID = tweet.id_str;
+        tweetUsername = tweet.user.screen_name;
+        tweetText = tweet.text.toLowerCase();
+      }
 
       config.personality.robotInterests.forEach(function (element) {
         var tempInterest = element;
