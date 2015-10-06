@@ -17,12 +17,28 @@ var client = new Twitter({
   access_token_secret: config.twitter.access_token_secret
 });
 
+// On initial load, store robot's interests as an object for faster lookup.
+var interestsObject = {};
+
 module.exports = {
+  // Map robot's interests array to an object for constant time lookup.
+  mapInterests: function() {
+    config.personality.robotInterests.forEach(function(element) {
+      interestsObject[element] = true;
+    });
+  },
+
   // Initialize our Twitter stream and start monitoring 
   // new tweets that appear in our as they come in.
   watchStream: function (mode) {
     // Set proper context for 'this' since it will be called inside some functions.
     var context = this;
+
+    // Each time we call the watchStream method (usually on bootup), map
+    // robot interests array from config component into a local object.
+    this.mapInterests();
+
+    console.log(interestsObject);
 
     if (config.settings.monitorStream) {
       client.stream('user', function(stream){
@@ -179,40 +195,59 @@ module.exports = {
       //   return;
       // }
 
+      //if (tweetUsername.toLowerCase() !== config.settings.robotName.toLowerCase())
+
       var tweetID;
       var tweetUsername;
       var tweetText;
 
-      console.log("\n\n\n---------------------\nINTEREST DATA\n", tweet);
+      //console.log("\n\n\n---------------------\nINTEREST DATA\n", tweet);
 
-      if (tweet.retweeted_status) {
-        //console.log('Favoriting retweet...');
-        tweetID = tweet.retweeted_status.id_str;
-        tweetUsername = tweet.retweeted_status.user.screen_name;
-        tweetText = tweet.retweeted_status.text.toLowerCase();
-      } else {
+      // if (tweet.retweeted_status) {
+      //   //console.log('Favoriting retweet...');
+      //   tweetID = tweet.retweeted_status.id_str;
+      //   tweetUsername = tweet.retweeted_status.user.screen_name;
+      //   tweetText = tweet.retweeted_status.text.toLowerCase();
+      // } else {
         tweetID = tweet.id_str;
         tweetUsername = tweet.user.screen_name;
         tweetText = tweet.text.toLowerCase();
+      // }
+
+      // Base condition for our robot. Change to true if we've found
+      // a matching interest. This will prevent us from trying to
+      // favorite a tweet multiple times.
+      var foundInterest = false;
+      var tempInterest; // Store the interest we found within the tweet.
+
+      // Split up the text of the tweet into an array.
+      var tweetTextArray = tweetText.split(' ');
+
+      // Callback function to check if a particular element is a robot interest.
+      var isRobotInterest = function(element) {
+        if (interestsObject[element]) {
+          tempInterest = element;
+          foundInterest = true;
+        }
+        
+        return interestsObject[element];
+      };
+
+      // Iterate over the tweetTextArray and see if there's a matching interest
+      // from the robotInterests object.
+      tweetTextArray.some(isRobotInterest);
+
+      if (foundInterest) {
+        console.log('\nFavoriting the following tweet from @' + tweetUsername + ' because it mentions \'' + tempInterest + '\':');
+        console.log(tweet.text);
+
+        client.post('favorites/create', {id: tweetID},  function(error, tweet, response){
+          if(error) {
+            console.log('Error favoriting tweet. Possible API rate limit encountered. Please wait a few moments.');
+            console.log(error);
+          }
+        });
       }
-
-      config.personality.robotInterests.forEach(function (element) {
-        var tempInterest = element;
-        tempInterest = tempInterest.toLowerCase();
-        //console.log('TWEET ID: ', tweetID);
-        // If one of our interests is found in the text of the tweet AND our robot wasn't the one who tweeted it, let's favorite it.
-        if (tweetText.indexOf(tempInterest) !== -1 && tweetUsername.toLowerCase() !== config.settings.robotName.toLowerCase()) {
-          console.log('\nFavoriting the following tweet from @' + tweetUsername + ' because it mentions \'' + tempInterest + '\':');
-          console.log(tweet.text);
-
-          client.post('favorites/create', {id: tweetID},  function(error, tweet, response){
-            if(error) {
-              console.log('Error favoriting tweet. Possible API rate limit encountered. Please wait a few moments.');
-              console.log(error);
-            }
-          });
-        } 
-      });
     }
   },
 
@@ -292,5 +327,7 @@ module.exports = {
 // };
 
 //module.exports.checkReply(fakeTweet);
+// module.exports.mapInterests();
+// module.exports.checkInterests(fakeTweet);
 
 //module.exports.watchStream();
