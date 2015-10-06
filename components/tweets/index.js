@@ -243,8 +243,12 @@ module.exports = {
 
         client.post('favorites/create', {id: tweetID},  function(error, tweet, response){
           if(error) {
-            console.log('Error favoriting tweet. Possible API rate limit encountered. Please wait a few moments.');
-            console.log(error);
+            if (error.code === 139) {
+              // This means we've already favorited this tweet. Ignore it.
+            } else {
+              console.log('Error favoriting tweet. Possible API rate limit encountered. Please wait a few moments.');
+              console.log(error);
+            }
           }
         });
       }
@@ -263,12 +267,14 @@ module.exports = {
 
   // Send a tweet!
   postNewTweet: function(send_msg) {
-    client.post('statuses/update', {status: send_msg},  function(error, tweet, response){
-      if(error) {
-        console.log('Error posting tweet. Possible API rate limit encountered. Please wait a few moments');
-        console.log(error);
-      }
-    });
+    if (config.settings.postTweets) {
+      client.post('statuses/update', {status: send_msg},  function(error, tweet, response){
+        if(error) {
+          console.log('Error posting tweet. Possible API rate limit encountered. Please wait a few moments');
+          console.log(error);
+        }
+      });
+    }
   },
 
   // If we're writing a reply to a tweet, let's pass in the username and the ID of the tweet.
@@ -312,6 +318,36 @@ module.exports = {
         //console.log(error);
       }
     });
+  },
+
+  // Check for any new followers
+  // If new follower is found, let's be friendly and follow them back!
+  getFollowers: function() {
+    if (!config.settings.followUsers) {
+      console.log("\nWarning: Cannot get users list \n\'follow new users\' is disabled in configuration.");
+      return;
+    }
+
+    client.get('followers/list', {count: 3}, function(error, followers, response){
+      if(error) {
+        console.log('followers list error', error);
+      }      
+
+      if(!error) {
+        var followerArray = [];
+        var newFollower = followers.users[0].screen_name;
+
+        client.post('friendships/create', {screen_name: newFollower},  function(error, tweet, response){
+          if (error) console.log('create friendships error', error);
+          if (!error) {
+            if (!tweet.following) { // Check response to see whether or not we were already following user. If not, hey! Awesome!
+              console.log('Following user @' + newFollower);
+              //console.log(tweet);
+            }
+          }
+        });
+      }
+    });  
   },
 
 };

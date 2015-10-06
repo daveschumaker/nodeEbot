@@ -101,7 +101,7 @@ module.exports = {
 
     //console.log('STARTWORDS: ', this.startwords);
     //console.log(this.wordpairs);
-    console.log('TOTAL WORDS: ', countWords);
+    //console.log('TOTAL WORDS: ', countWords);
     //console.log('DICTIONARY: ', this.dictionary);
     return this.wordpairs;
   },
