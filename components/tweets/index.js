@@ -33,7 +33,7 @@ module.exports = {
   // new tweets that appear in our as they come in.
   watchStream: function (mode) {
     // Set proper context for 'this' since it will be called inside some functions.
-    var context = this;
+    var self = this;
 
     // Each time we call the watchStream method (usually on bootup), map
     // robot interests array from config component into a local object.
@@ -54,12 +54,12 @@ module.exports = {
           } else {
             // Look at contents of the tweet and determine if we should favorite it.
             if (config.settings.canFavoriteTweets) {
-              context.checkInterests(tweet); // Potentially favorite tweet based on interests of our robot.
+              self.checkInterests(tweet); // Potentially favorite tweet based on interests of our robot.
             }
             
             // Look at Tweet and determine if it's a reply to our robot.
             if (tweet.id !== null) {
-              context.checkReply(tweet);
+              self.checkReply(tweet);
             }            
             //console.log(tweet);
           }
@@ -299,11 +299,11 @@ module.exports = {
 
       // Wrapping everything in a timeout function so that we don't reply instantaneously
       var randomDelay = Math.floor((Math.random() * 5) + 1); // Random delay between 1 and 15 seconds
-      var context = this;
+      var self = this;
       setTimeout(function () {
         var replyTweet;
 
-      // We're going to try to reply to the user with CONTEXT.
+      // We're going to try to reply to the user with self.
       var myReply = generator.makeSentenceFromKeyword(replytext);
 
       if (typeof myReply !== 'undefined') {
@@ -316,7 +316,7 @@ module.exports = {
         
         console.log('\nReplying to user @' + username + ':');
         console.log(replyTweet);
-        if (config.settings.respondReplies) context.sendReply(replyTweet,replyID); 
+        if (config.settings.respondReplies) self.sendReply(replyTweet,replyID); 
       }, (randomDelay * 1000));
     }
   },

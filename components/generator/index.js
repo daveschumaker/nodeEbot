@@ -336,7 +336,7 @@ module.exports = {
     allWords = replystring.split(' ');
 
     // Pass in proper context to the calculateHighest function
-    var context = this;
+    var self = this;
 
     // Calculate highest keyword
     function calculateHighest(allWords) {
@@ -346,7 +346,7 @@ module.exports = {
 
       for (var i = 0; i < allWords.length; i++) {
         //console.log('Getting results for: ' + feederArray[i]);
-        var result = context.getKeywords(allWords[i]);
+        var result = self.getKeywords(allWords[i]);
         if (result[0] > count) {
           count = result[0];
           highestWord = result[1];
