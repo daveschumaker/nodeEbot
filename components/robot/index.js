@@ -54,7 +54,7 @@ module.exports = {
     console.log('(This may take a few minutes to generate...)');
 
     // Set proper context
-    var context = this;
+    var self = this;
 
     // Load in text file containing raw Tweet data.
     fs.readFileAsync(tweetFile)
@@ -69,7 +69,7 @@ module.exports = {
     })
     .then(function(data){
       // Once word dictionary is built, kick off the robots actions!
-      context.onBoot();
+      self.onBoot();
 
       /*
       *  There may be a better way to handle this. Right now,
@@ -79,7 +79,7 @@ module.exports = {
       *  etc.
       */
       setInterval(function() {
-        context.robotTasks();
+        self.robotTasks();
       }, 5000);        
     });
   },
@@ -123,7 +123,7 @@ module.exports = {
     /*
     *  Check if the Twitter Stream dropped. If so, reinitialize it.
     */
-    utils.checkStream();
+    tweet.checkStream();
 
     /*
     *   Check for new followers
