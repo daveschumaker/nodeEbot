@@ -15,6 +15,7 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "bluebird": "^2.10.0",
+    "sqlite3": "^3.1.1",
     "twitter": "^1.2.5"
   }
 }

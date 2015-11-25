@@ -69,7 +69,7 @@ module.exports = {
     })
     .then(function(data){
       // Once word dictionary is built, kick off the robots actions!
-      self.onBoot();
+      //self.onBoot();
 
       /*
       *  There may be a better way to handle this. Right now,
@@ -79,7 +79,7 @@ module.exports = {
       *  etc.
       */
       setInterval(function() {
-        self.robotTasks();
+        //self.robotTasks();
       }, 5000);        
     });
   },
