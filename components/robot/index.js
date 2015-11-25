@@ -123,7 +123,7 @@ module.exports = {
     /*
     *  Check if the Twitter Stream dropped. If so, reinitialize it.
     */
-    utils.checkStream();
+    tweet.checkStream();
 
     /*
     *   Check for new followers

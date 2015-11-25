@@ -261,6 +261,23 @@ module.exports = {
     }
   },
 
+
+  // Check if the Twitter stream is active. It sometimes has a nasty habit of dying.
+  // Sometimes, Twitter can drop our stream. Based on this document, 
+  // we check out lastTweetTime stamp to see if
+  // it's been longer than 90 seconds since the last Tweet. 
+  // If so, restart the stream!
+  // More info: https://dev.twitter.com/streaming/overview/connecting
+  checkStream: function() {
+    var curTime = Math.floor(Date.now() / 1000);   
+    // It's been longer than around 120 seconds since we've seen a tweet. Let's restart the stream.
+    // console.log('[' + utils.currentTime() + '] Debug - lastTweetReceivedTime: ', config.settings.lastTweetReceivedTime);
+    if (curTime - config.settings.lastTweetReceivedTime >= 120) {
+      console.log('Stream may have dropped. Restarting stream...');
+      this.watchStream();  
+    }
+  },
+
   // Send a tweet!
   postNewTweet: function(send_msg) {
     if (config.settings.postTweets) {
