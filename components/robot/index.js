@@ -46,14 +46,12 @@ module.exports = {
     console.log(' -Follow new users? ' + config.settings.followUsers);
     console.log(' -Mark tweets as favorites? ' + config.settings.canFavoriteTweets);
     console.log(' -Tweet interval: ' + config.settings.postInterval + ' seconds');
-    console.log('\nAnalyzing data and creating word corpus from file \'' + tweetFile + '\'');
-    console.log('(This may take a few minutes to generate...)');
 
     // Set proper context
     var self = this;
 
     setInterval(function() {
-      //self.robotTasks();
+      self.robotTasks();
     }, 5000);        
   },
 
@@ -74,9 +72,10 @@ module.exports = {
     // If so, post a tweet!
     if (config.settings.tweetOnStartup) {
       robotActions.lastTweet = Math.floor(Date.now() / 1000); // Update time of the last tweet.
-      newTweet = generator.makeTweet(140); // Create a new tweet.
-      tweet.postNewTweet(newTweet); // Post tweet.
-      console.log(utils.currentTime(), newTweet + '');     
+      generator.makeTweet(function(newTweet) {
+        tweet.postNewTweet(newTweet); // Post tweet.
+        console.log(utils.currentTime(), newTweet + '');     
+      });
     }
   },
 
@@ -88,9 +87,10 @@ module.exports = {
     */
     if (Math.floor(Date.now() / 1000) - robotActions.lastTweet >= config.settings.postInterval) {
       robotActions.lastTweet = Math.floor(Date.now() / 1000); // Update time of the last tweet.
-      newTweet = generator.makeTweet(140); // Create a new tweet.
-      tweet.postNewTweet(newTweet); // Post tweet.
-      console.log(utils.currentTime(), newTweet + '');
+      generator.makeTweet(function(newTweet) {
+        tweet.postNewTweet(newTweet); // Post tweet.
+        console.log(utils.currentTime(), newTweet + '');     
+      });
     }
 
     /*

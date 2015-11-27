@@ -3,12 +3,10 @@
  *  
  */
 
-var Promise = require('bluebird');
 var Twitter = require('twitter');
 var config = require('../../config');
 var generator = require('../generator');
 var utils = require('../utilities');
-
 
 // Initialize a new Twitter client using the provided API keys.
 var client = new Twitter({
@@ -292,31 +290,39 @@ module.exports = {
 
   // If we're writing a reply to a tweet, let's pass in the username and the ID of the tweet.
   writeReply: function(username, replyID, replytext) {
+    var self = this;
+    if (!config.settings.respondReplies) {
+      return;
+    }
     
     if (this.checkIgnored(username)) {
       console.log("\nUser is on ignore list. Not replying.");
     } else {
-
       // Wrapping everything in a timeout function so that we don't reply instantaneously
       var randomDelay = Math.floor((Math.random() * 5) + 1); // Random delay between 1 and 15 seconds
-      var self = this;
       setTimeout(function () {
         var replyTweet;
 
-      // We're going to try to reply to the user with self.
-      var myReply = generator.makeSentenceFromKeyword(replytext);
+        // We're going to try to reply to the user with context.
+        var myReply = generator.makeSentenceFromKeyword(replytext);
 
-      if (typeof myReply !== 'undefined') {
-        console.log('\nGenerating a contextual reply to user.');
-        replyTweet = '@' + username + ' ' + myReply;
-      } else {
-        console.log('\nGenerating a random reply to user.');
-        replyTweet = generator.twitterFriendly(true, username); 
-      }
+        generator.makeTweet(function(newTweet) {
+          replyTweet = '@' + username + ' ' + newTweet;
+          if (replyTweet.length <= 140) {
+            console.log('\nReplying to user @' + username + ':');
+            console.log(replyTweet);
+            self.sendReply(replyTweet,replyID); 
+          }   
+        });      
+
+        // if (typeof myReply !== 'undefined') {
+        //   console.log('\nGenerating a contextual reply to user.');
+        //   replyTweet = '@' + username + ' ' + myReply;
+        // } else {
+        //   console.log('\nGenerating a random reply to user.');
+        //   replyTweet = generator.twitterFriendly(true, username); 
+        // }
         
-        console.log('\nReplying to user @' + username + ':');
-        console.log(replyTweet);
-        if (config.settings.respondReplies) self.sendReply(replyTweet,replyID); 
       }, (randomDelay * 1000));
     }
   },
@@ -375,7 +381,7 @@ module.exports = {
 // };
 
 //module.exports.checkReply(fakeTweet);
-// module.exports.mapInterests();
-// module.exports.checkInterests(fakeTweet);
+//module.exports.mapInterests();
+//module.exports.checkInterests(fakeTweet);
 
 //module.exports.watchStream();

@@ -13,9 +13,48 @@ tweetFile = 'tweets.txt';
 fs = Promise.promisifyAll(fs);
 
 var generateCorpus = {
+  // Clean up our content and remove things that result in poorly generated sentences.
+  cleanContent: function(content) {
+    var cleaned = content;
+
+    cleaned.forEach(function(element, index) {
+      // Removing all sorts of weird content found in my tweets that screw this whole process up.
+      // Really, I should just get better at RegEx
+      cleaned[index] = cleaned[index].replace(/(@\S+)/gi,''); // Try to remove any usernames
+      cleaned[index] = cleaned[index].replace(/(http\S+)/gi,''); // Try to remove any URLs
+      cleaned[index] = cleaned[index].replace(/^RT\W/gi,''); // Remove "RT" -- though we're keeping the rest of the tweet. Should probably fix.
+      cleaned[index] = cleaned[index].replace(/( RT )/gi,' '); // Remove "RT" -- though we're keeping the rest of the tweet. Should probably fix.
+      cleaned[index] = cleaned[index].replace(/( MT )/g,' '); // Remove "MT" -- though we're keeping the rest of the tweet. Should probably fix.
+      cleaned[index] = cleaned[index].replace(/^ +/gm, ''); // Remove any leading whitespace
+      cleaned[index] = cleaned[index].replace(/[ \t]+$/, ''); // Remove any trailing whitespace
+      cleaned[index] = cleaned[index].replace(/(&#8217;)/, '\''); // Convert HTML entity to apostrophe
+      cleaned[index] = cleaned[index].replace(/(&#8216;)/, '\''); // Convert HTML entity to apostrophe
+      cleaned[index] = cleaned[index].replace(/\W-$/g, ''); // Remove dashes at the end of a line that result from stripped URLs.
+      cleaned[index] = cleaned[index].replace(/&gt;/g, '>'); // Convert greater than signs
+      cleaned[index] = cleaned[index].replace(/&lt;/g, '<'); // Convert less than signs
+      cleaned[index] = cleaned[index].replace(/&amp;/g,'&'); // Convert HTML entity
+      cleaned[index] = cleaned[index].replace(/(\/cc)/gi, ''); // Remove "/cc" from tweets
+      cleaned[index] = cleaned[index].replace(/(\/via)/gi, ''); // Remove "/via" from tweets
+      cleaned[index] = cleaned[index].replace(/"/g, ''); // Remove quotes
+      cleaned[index] = cleaned[index].replace(/“/g, ''); // Remove quotes
+      cleaned[index] = cleaned[index].replace(/”/g, ''); // Remove quotes
+      cleaned[index] = cleaned[index].replace(/(\))/g, ''); // Hopefully remove parentheses found at end of a word, but not in emojis
+      cleaned[index] = cleaned[index].replace(/(\()/g, ''); // Hopefully remove parentheses found at the beginning of a word, but not in emojis
+      cleaned[index] = cleaned[index].replace(/(\\n)/gm,''); // Replace all commas in words with nothing.
+      //cleaned[index] = cleaned[index].replace(/(\...)/g,'…'); // Save characters and replace three periods… 
+      //cleaned[index] = cleaned[index].replace(/[\(]/g, ''); // Remove quotes TODO: figure out how to get rid of these without destroying emojis.  
+    });
+
+    return cleaned;
+  },
+
   // Build out initial word pair dictionary for creating
   // semi-intelligent sounding sentences pseudo Markov chains.
   buildCorpus: function(content) {
+    var self = this;
+
+    // Clean content first.
+    content = self.cleanContent(content);
 
     // This for-loop will iterate over every single line of text that's passed in from the "content" argument.
     // This will be text that's cleaned up and formatted correctly after the server / bot reads data from

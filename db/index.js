@@ -12,6 +12,8 @@ if (global.appRootPath) {
   var file = "corpus.sqlite";
 }
 
+var file = '/Users/dave/Coding/nodeEbot/db/corpus.sqlite';
+
 var schema = require('./schema.js');
 var exists = fs.existsSync(file);
 var db = new sqlite3.Database(file);
@@ -60,11 +62,15 @@ var databaseActions = {
     db.run(sql,valueArray);
 
   },
-  getRandomWord: function(type, keyword, callback) {
+  getRandomWord: function(type, keyword, prevword, callback) {
     type = type || 'keyword';
     var sql, result;
 
     if (type === 'keyword') {
+      if (prevword) {
+        sql = "SELECT * FROM word_dictionary WHERE keyword = ? AND prev_1 = ? ORDER BY RANDOM() LIMIT 1";
+        keyword = [keyword, prevword];
+      }
       sql = "SELECT * FROM word_dictionary WHERE keyword = ? ORDER BY RANDOM() LIMIT 1";
       db.all(sql, keyword, function(err,rows){
         //rows contain values while errors, well you can figure out.
@@ -79,47 +85,11 @@ var databaseActions = {
     }
 
 
-  },
-  find: function(obj) {
-    db.find(obj, function(err, docs) {
-      console.log(docs);
-      //return docs;
-    });
   }
 };
 
 Promise.promisifyAll(databaseActions);
 module.exports = databaseActions;
-
-var results = [];
-var callback = function(result) {
-  var curWord;
-
-  if (result === undefined) {
-    //console.log('Undefined');
-    console.log(results.join(' '));
-    return;
-  }
-
-  if (results.length === 0) {
-    curWord = result.keyword;
-  } else {
-    curWord = result.next_1;
-  }
-
-  results.push(curWord);
-  // console.log(result);
-
-  if (results.length < 10) {
-    databaseActions.getRandomWord('keyword', curWord, callback);    
-  } else {
-    console.log(results.join(' '));
-    return;
-  }
-
-};
-
-databaseActions.getRandomWord('startword', null, callback);
 
 // TODO: Depending on action, change query
 // hashtags, startwords, etc.
