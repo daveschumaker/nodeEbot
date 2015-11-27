@@ -1,6 +1,6 @@
 // TEXT GENERATOR!
-
 var config = require('../../config');
+var db = require('../../db');
 
 module.exports = {
 
@@ -11,110 +11,6 @@ module.exports = {
   hashtags: [], // Automatically detect any hashtags that we use.
   wordpairs: [], // This is where we'll store our dictionary of word pairs
   popularKeywords: [], // Track popular keywords that the bot may be interested in based on our tweet history.
-
-  // Build out initial word pair dictionary for creating
-  // semi-intelligent sounding sentences pseudo Markov chains.
-  buildCorpus: function(content) {
-    var countWords = 0;
-
-    // This for-loop will iterate over every single line of text that's passed in from the "content" argument.
-    // This will be text that's cleaned up and formatted correctly after the server / bot reads data from
-    // our tweets.txt file. In the case below, content[currentLine] will represent one line of text.
-    // Example: content[currentLine] === "Oh, man. I'm really hungry!"
-    for (var currentLine = 0; currentLine < content.length; currentLine++) {
-
-        // In order to start properly building our corpus of processed text, 
-        // we're going to need to split up each word in our sentence individually into an array.
-        // Since we're splitting on spaces between words, this will attach punctuation marks and the like.
-        // This is something we actually want! We can check for "end" words and stuff later.
-        // Example: ['Oh,', 'man.', 'I\'m', 'really', 'hungry!']
-        var words = content[currentLine].split(' ');
-
-        // We want our robot to sound intelligent, we track words that start each sentence (new line).
-        // There are some cases where this currently falls apart. The above example is good. The only
-        // startword that would be pushed to the array would be "Oh" and not "I'm", since we're not checking
-        // for where sentences get split up.
-        this.startwords.push(words[0]);
-
-        // Now, we're going to iterate over all the words we've found in our currentLine,
-        // which is all the stuff we pushed in the new words array up above. 
-        // Let's start adding real data to our dictionary!
-        for (var j = 0; j < words.length - 1; j++) {
-
-            // TODO: I forget what this does...
-            var checkValid = true; // Flag to check whether a value is true or false.
-
-            // This specifically checks if the current word is a hashtag,
-            // so that we can add it to a special array for later use.
-            // For example, maybe we'll want to attach completely random hashtags
-            // to our sentences. #blessed
-            if (words[j].substring(0, 1) === "#") {
-              var tempHashtag = words[j];
-              tempHashtag = tempHashtag.replace(/[\W]*$/g,''); // Remove any cruft found at end of hashtag.
-              this.hashtags.push(tempHashtag);
-            }
-
-            // Make sure our word isn't an empty value. No one likes that. Not even you.
-            if (words[j] !== '' && checkValid === true) {
-
-              // New method for tracking words...
-              // TODO: This is a work in progress to improve how we're storing and 
-              // referencing our word dictionary. WIP for v.2.0.0
-              // Check if the word even exists in our array.
-              // If not, let's add it and then build in our template.
-              if (!this.dictionary[words[j]]) {
-                countWords++;
-                this.dictionary[words[j]] = {
-                  count: 1,
-                  next_words: [],
-                  prev_words: [],
-                };
-              } else {
-                // Word already exists in our dictionary. Let's update some stuff!
-                this.dictionary[words[j]].count++;
-                this.dictionary[words[j]].next_words.push(this.checkExists(words[j+1]));
-                this.dictionary[words[j]].prev_words.push(this.checkExists(words[j-1]));
-              }             
-
-              // NOTE: This is the current way we're storing data in our word dictionary. 
-              // We simply add this object to an array. This means multiple objects will exist
-              // that feature the same object. It's really inefficient and long term, I want to
-              // improve how this works.
-              var curWord = {
-                first_word: words[j],
-                word_pair: words[j] + ' ' + this.checkExists(words[j+1]),
-                word_pair_array: [words[j], this.checkExists(words[j+1])],
-                next_word: this.checkExists(words[j+2]),
-                prev_word: this.checkExists(words[j-1]),
-                //count: 1, // Deprecated: Was originally using this to potentially rank keywords, but this isn't needed now.
-              };
-              //countWords++;
-              this.wordpairs.push(curWord);
-            }
-        }
-    }
-
-    // Clean up the results by moving some undesirable ish from our word arrays.
-    delete this.startwords['"'];
-    delete this.startwords[''];
-    delete this.startwords[' '];
-
-    //console.log('STARTWORDS: ', this.startwords);
-    //console.log(this.wordpairs);
-    //console.log('TOTAL WORDS: ', countWords);
-    //console.log('DICTIONARY: ', this.dictionary);
-    return this.wordpairs;
-  },
-
-  // Checks if the next word exists and adds it to the corpus dictionary.
-  // TODO: We're probably returning unnecessary space if a word doesn't exist. Need to fix.
-  checkExists: function(value) {
-    if (!value) {
-      //return '';
-    } else {
-      return value;
-    }
-  },
 
   checkSentenceEnd: function(word) {
 

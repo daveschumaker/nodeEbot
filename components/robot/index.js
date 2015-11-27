@@ -15,15 +15,11 @@ var utils = require('../utilities'); // Various helper functions
 
 // Create promises
 fs = Promise.promisifyAll(fs);
-generator = Promise.promisifyAll(generator);
 
 ////// Start up tasks //////
 
 // Process a provided list of stop words.
 generator.stopwords = fs.readFileAsync('./data/stopwords.txt').toString().split("\n");
-
-// Filename to source or tweets and other content from?
-tweetFile = './tweets.txt';
 
 // Track times of various actions from our robot
 var robotActions = {
@@ -40,7 +36,7 @@ module.exports = {
   // Example, build word dictionary. Start watching stream, etc.
   init: function() {
     // Load up robot settings.
-    console.log('\n\nNODEEBOT FOR NODEJS v.0.2.0');
+    console.log('\n\nNODEEBOT FOR NODEJS v.0.3.0');
     console.log('by Dave Schumaker (@davely)\n');
     console.log('-== CONFIG SETTINGS ==-');
     console.log(' -Post to Twitter? ' + config.settings.postTweets);
@@ -56,32 +52,9 @@ module.exports = {
     // Set proper context
     var self = this;
 
-    // Load in text file containing raw Tweet data.
-    fs.readFileAsync(tweetFile)
-    .then(function(fileContents) {
-      //Split content into array, separating by line.
-      var content = fileContents.toString().split("\n");
-      return content;
-    })
-    .then(function(content){
-      //Build word corpus using content array above.
-      return generator.buildCorpus(content);
-    })
-    .then(function(data){
-      // Once word dictionary is built, kick off the robots actions!
-      //self.onBoot();
-
-      /*
-      *  There may be a better way to handle this. Right now,
-      *  this interval runs every 5 seconds and calls the
-      *  robotTasks function, which handles the logic that checks
-      *  if it's time to send a new tweet, reload the Twitter stream
-      *  etc.
-      */
-      setInterval(function() {
-        //self.robotTasks();
-      }, 5000);        
-    });
+    setInterval(function() {
+      //self.robotTasks();
+    }, 5000);        
   },
 
   /*

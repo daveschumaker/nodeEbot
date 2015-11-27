@@ -1,6 +1,6 @@
 {
   "name": "nodeEbot",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A twitter_ebooks style bot for Node.js ",
   "main": "bot.js",
   "scripts": {
@@ -14,6 +14,7 @@
   "author": "Dave Schumaker",
   "license": "BSD-2-Clause",
   "dependencies": {
+    "async": "^1.5.0",
     "bluebird": "^2.10.0",
     "sqlite3": "^3.1.1",
     "twitter": "^1.2.5"

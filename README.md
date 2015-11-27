@@ -1,5 +1,5 @@
 # NodeEbot
-_Current Version: 0.2.0
+_Current Version: 0.3.0
 
 This is NodeEBot (pronounced as _"nodey bot"_ or even _"naughty bot"_, if you prefer). It stands for **Node** **E**-books **Bot**.
 
@@ -14,9 +14,9 @@ You can run this app and start generating sentences without needing to have Twit
 
 Run the application like so...
 
-```
+
 node bot.js
-```
+
 
 ## Installation and Usage
 
@@ -24,13 +24,13 @@ This project requires Nodejs v0.10.35+. If you're looking for a place to host No
 
 To run, copy the project into your preferred directory and then install the required dependencies using:
 
-```
+
 npm install
-```
+
 
 You can edit various configuration settings in the bot.js file. Before you can begin you'll need to have Twitter API credentials which can be setup [right here](https://apps.twitter.com/). Once you have your consumer API key and secret as well as your access token and secret, add them to the config.js file found in the config folder:
 
-```
+
 // Twitter API configuration
 var client = new Twitter({
   consumer_key: 'xxxx',
@@ -38,15 +38,15 @@ var client = new Twitter({
   access_token_key: 'xxxx',
   access_token_secret: 'xxxx'
 });
-```
+
 
 You'll also need to add the Twitter username of your bot (without the @ symbol) to the config file. (This is for tracking mentions as well as making sure the bot ignores actions from itself so it doesn't get caught in a loop).
 
-```
+
 // Your robot's Twitter username (without the @ symbol)
 // We use this to search for mentions of the robot and to prevent it from replying to itself
 robotName = "xxxx";
-```
+
 
 Once that's done, the bot is **almost** ready to go. You can modify a few other settings that influence how chatty the bot is, how often it will interact with other users or use random hashtags and emojis.
 
@@ -60,16 +60,16 @@ Right now, I haven't implemented a way to parse the Twitter's csv data that's ge
 
 I've added some basic ability to strip our Twitter usernames and URLs from the archive. That means it will treat something like:
 
-```
+
 @davely That's great. I've seen something like that before. 
 http://flickr.com/...
-```
+
 
 as
 
-```
+
 That's great. I've seen something like that before.
-```
+
 
 ## Running multiple bots
 
