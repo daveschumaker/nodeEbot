@@ -12,6 +12,10 @@ tweetFile = 'tweets.txt';
 // Create promises
 fs = Promise.promisifyAll(fs);
 
+// Process a provided list of stop words.
+var stopwords = [];
+stopwords = fs.readFileAsync('./data/stopwords.txt').toString().split("\n");
+
 var generateCorpus = {
   // Clean up our content and remove things that result in poorly generated sentences.
   cleanContent: function(content) {
@@ -80,8 +84,10 @@ var generateCorpus = {
         // Let's start adding real data to our dictionary!
         for (var j = 0; j < words.length - 1; j++) {
 
-            // TODO: I forget what this does...
-            var checkValid = true; // Flag to check whether a value is true or false.
+            // Start compiling a list of popular keywords.
+            // if (stopwords.indexOf(words[j]) === -1) {
+            //   db.updatePopularWord(words[j]);
+            // }
 
             // This specifically checks if the current word is a hashtag,
             // so that we can add it to a special array for later use.
@@ -94,7 +100,7 @@ var generateCorpus = {
             }
 
             // Make sure our word isn't an empty value. No one likes that. Not even you.
-            if (words[j] !== '' && checkValid === true) {          
+            if (words[j] !== '') {          
 
               // NOTE: This is the current way we're storing data in our word dictionary. 
               // We simply add this object to an array. This means multiple objects will exist
@@ -118,14 +124,16 @@ var generateCorpus = {
 
 generateCorpus = Promise.promisifyAll(generateCorpus);
 
-// Load in text file containing raw Tweet data.
-fs.readFileAsync(tweetFile)
-.then(function(fileContents) {
-  //Split content into array, separating by line.
-  var content = fileContents.toString().split("\n");
-  return content;
-})
-.then(function(content){
-  //Build word corpus using content array above.
-  return generateCorpus.buildCorpus(content);
+db.initDB(function() {
+  // Load in text file containing raw Tweet data.
+  fs.readFileAsync(tweetFile)
+  .then(function(fileContents) {
+    //Split content into array, separating by line.
+    var content = fileContents.toString().split("\n");
+    return content;
+  })
+  .then(function(content){
+    //Build word corpus using content array above.
+    return generateCorpus.buildCorpus(content);
+  });
 });

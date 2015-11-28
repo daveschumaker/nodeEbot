@@ -3,23 +3,11 @@
 *   Things like event loops, checking for followers, checking tweets, etc.
 **/
 
-// Import required npm modules to make our robot work!
-var fs = require('fs');
-var Promise = require('bluebird');
-
 //////////
 var config = require('../../config'); // Robot config, personality settings and API keys
 var generator = require('../generator'); // Compiles word dictionary and builds new sentences.
 var tweet = require('../tweets'); // Methods to interact with Twitter by writing and favoriting tweets and more.
 var utils = require('../utilities'); // Various helper functions
-
-// Create promises
-fs = Promise.promisifyAll(fs);
-
-////// Start up tasks //////
-
-// Process a provided list of stop words.
-generator.stopwords = fs.readFileAsync('./data/stopwords.txt').toString().split("\n");
 
 // Track times of various actions from our robot
 var robotActions = {
@@ -73,6 +61,7 @@ module.exports = {
     if (config.settings.tweetOnStartup) {
       robotActions.lastTweet = Math.floor(Date.now() / 1000); // Update time of the last tweet.
       generator.makeTweet(function(newTweet) {
+        newTweet = newTweet + generator.attachEmoji(newTweet.length);
         tweet.postNewTweet(newTweet); // Post tweet.
         console.log(utils.currentTime(), newTweet + '');     
       });
@@ -93,14 +82,10 @@ module.exports = {
       });
     }
 
-    /*
-    *  Check if the Twitter Stream dropped. If so, reinitialize it.
-    */
+    // Check if the Twitter Stream dropped. If so, reinitialize it.
     tweet.checkStream();
 
-    /*
-    *   Check for new followers
-    */
+    // Check for new followers
     if (config.settings.followUsers && Math.floor(Date.now() / 1000) - robotActions.lastFollowCheck >= 300) {
       robotActions.lastFollowCheck = Math.floor(Date.now() / 1000);
       tweet.getFollowers();      
@@ -109,11 +94,10 @@ module.exports = {
 
 };
 
-
 ///// DEBUG STUFF
 // var fakeTweet = {
 //   id_str: 12345,
-//   text: '@Roboderp This is a Dodgers sample tweet to analyze!',
+//   text: '@Roboderp This is a sample tweet to analyze that contains the word baseball!',
 //   user: {
 //     screen_name: 'fakeuser',
 //   }

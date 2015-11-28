@@ -2,8 +2,6 @@
 var async = require("async");
 var fs = require("fs");
 var sqlite3 = require('sqlite3').verbose();
-var Promise = require('bluebird');
-// Sequelize = deasync(Sequelize);
 
 // Check environment for testing stuff:
 if (global.appRootPath) {
@@ -12,26 +10,23 @@ if (global.appRootPath) {
   var file = "corpus.sqlite";
 }
 
-var file = '/Users/dave/Coding/nodeEbot/db/corpus.sqlite';
-
 var schema = require('./schema.js');
 var exists = fs.existsSync(file);
 var db = new sqlite3.Database(file);
 
-db.serialize(function() {
-  if(!exists) {
-    db.run(schema.word_dictionary());
-    db.run(schema.start_words());
-    db.run(schema.end_words());
-    db.run(schema.hashtags());
-  }
-});
-
-//var db = new Datastore({ filename: appRootPath + '/db/corpus.db', autoload: true });
-//var db = new Datastore({ filename: 'corpus.db', autoload: true });
-//db.ensureIndex({fieldName : 'word'});
-
 var databaseActions = {
+  initDB: function(callback) {
+    db.serialize(function() {
+      if(!exists) {
+        db.run(schema.word_dictionary());
+        db.run(schema.start_words());
+        db.run(schema.end_words());
+        db.run(schema.hashtags());
+        db.run(schema.popular_words());
+        callback();
+      }
+    });
+  },
   addWord: function(obj, action) {
     var sql, valueArray;
     action = action || 'keyword';
@@ -83,26 +78,21 @@ var databaseActions = {
         callback(rows[0]);
       });
     }
-
-
+  },
+  updatePopularWord: function(keyword) {
+    var sql = "SELECT * FROM popular_words WHERE keyword = ?";
+    var count;
+    db.all(sql, keyword, function(err, rows) {
+      if (rows !== undefined) {
+        count = rows[1];
+        count++;
+      } else {
+        count = 1;
+      }
+      var updateSql = 'INSERT OR REPLACE INTO popular_words (keyword, count) VALUES (?,?);';        
+      db.run(updateSql, [keyword, count]);
+    });
   }
 };
 
-Promise.promisifyAll(databaseActions);
 module.exports = databaseActions;
-
-// TODO: Depending on action, change query
-// hashtags, startwords, etc.
-
-// TODO: Break out generator into it's own script!
-// Example: Run "npm create corpus"
-// Detect if user hasn't run it before
-// This is useful for now parsing twitter CSV!!
-
-//databaseActions = Promise.promisifyAll(databaseActions);
-
-// db.find({"word":"tweets"}, function(err, docs) {
-//   console.log(docs);
-// });
-
-//databaseActions.find({'word':'Dave'})

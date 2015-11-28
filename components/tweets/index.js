@@ -303,9 +303,6 @@ module.exports = {
       setTimeout(function () {
         var replyTweet;
 
-        // We're going to try to reply to the user with context.
-        var myReply = generator.makeSentenceFromKeyword(replytext);
-
         generator.makeTweet(function(newTweet) {
           replyTweet = '@' + username + ' ' + newTweet;
           if (replyTweet.length <= 140) {

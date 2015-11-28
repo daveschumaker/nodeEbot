@@ -1,4 +1,5 @@
 // SQLite is dumb and will only execute one CREATE TABLE statement at a time.
+// Export these methods to that we can individually create tables on first boot.
 
 module.exports = {
   word_dictionary: function() {
@@ -28,6 +29,14 @@ module.exports = {
   hashtags: function() {
     var sql = "CREATE TABLE hashtags (keyword TEXT);" +
       "CREATE INDEX index_word ON hashtags (keyword);";
+    return sql;
+  },
+  popular_words: function() {
+    var sql =  "CREATE TABLE popular_words (" +
+    "keyword TEXT UNIQUE, " +
+    "count INTEGER" +
+    ");" +
+    "CREATE INDEX index_word ON popular_words (keyword);";
     return sql;
   }
 };
