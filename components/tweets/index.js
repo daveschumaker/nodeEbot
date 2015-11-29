@@ -304,7 +304,8 @@ module.exports = {
         var replyTweet;
 
         generator.makeTweet(function(newTweet) {
-          replyTweet = '@' + username + ' ' + newTweet;
+          replyTweet = '@' + username + ' ' + newTweet + generator.attachEmoji(newTweet.length);
+          replyTweet = generator.detectUndefined(replyTweet);
           if (replyTweet.length <= 140) {
             console.log('\nReplying to user @' + username + ':');
             console.log(replyTweet);

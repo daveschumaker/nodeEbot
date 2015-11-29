@@ -1,5 +1,4 @@
 var path = require('path');
-//global.appRootPath = '/Users/dave/Coding/nodeEbot';
 global.appRootPath = '..';
 
 var generator = require('../components/generator'); // Compiles word dictionary and builds new sentences.

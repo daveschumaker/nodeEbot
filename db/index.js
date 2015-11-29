@@ -72,12 +72,32 @@ var databaseActions = {
         callback(rows[0]);
       });      
     } else if (type === 'startword') {
+      // TODO: Need more efficient way to do this. Can probably combine SQL statements to eliminate callback hell.
       sql = "SELECT * FROM start_words ORDER BY RANDOM() LIMIT 1";
       db.all(sql, function(err,rows){
-        //rows contain values while errors, well you can figure out.
-        callback(rows[0]);
+        var resultKeyword = rows[0].keyword;
+        var startwordQuery = "SELECT * FROM word_dictionary WHERE keyword = ? ORDER BY RANDOM() LIMIT 1";
+        db.all(startwordQuery, resultKeyword, function(err, rows) {
+          callback(rows[0]);
+        });
       });
     }
+  },
+  getWordPair: function(keyword, secondWord, callback) {
+    //console.log('[WORDS]', keyword, secondWord);
+    if (secondWord === undefined) {
+      //console.log('second word no results', keyword, secondWord);
+      return false;
+    }
+
+    sql = "SELECT * FROM word_dictionary WHERE keyword = ? AND next_1 = ? ORDER BY RANDOM() LIMIT 1";
+    keyword = [keyword, secondWord];
+
+    db.all(sql, keyword, function(err,rows){
+      //rows contain values while errors, well you can figure out.
+      //console.log('[RESULT]:', rows[0]);
+      callback(rows[0]);
+    });    
   },
   updatePopularWord: function(keyword) {
     var sql = "SELECT * FROM popular_words WHERE keyword = ?";

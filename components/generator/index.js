@@ -19,7 +19,14 @@ var tweetGenerator = {
     };
 
     var callback = function(result) {
-      var curWord, newSentence, getLength;
+      var curWord, newSentence, getLength, nextSearchKeyword, nextSearchSecondWord;
+
+      //console.log('[RESULT WORD OBJ]', result);
+
+      // Detect no results to start. Restart this whole process!
+      if (result === false) {
+        db.getRandomWord('startword', null, null, callback);
+      }
 
       if (result === undefined) {
         //console.log('Undefined');
@@ -35,29 +42,49 @@ var tweetGenerator = {
 
       if (results.length === 0) {
         if (result.keyword !== null) {
+          results.push(result.keyword);
+          nextSearchKeyword = result.next_1;
+          if (result.next_1 !== null) {
+            results.push(result.next_1);
+            nextSearchSecondWord = result.next_2;
+          }
           curWord = result.keyword;
-          results.push(curWord);
         }
       } else {
 
         // Sometimes, null values will sneak into our sentence and the word
         // "undefined" will suddenly appear in our tweet. 
         if (result.next_1 !== null) {
-          results.push(result.next_1);
-          curWord = result.next_1;
+          nextSearchKeyword = result.next_1;
+
+          // Try to fix weird duplication issue...
+          if (result.next_1 !== results[results.length - 1]) {
+            results.push(result.next_1);
+          }
+
+          //curWord = result.next_1;
         } 
+        // if (result.next_2 !== null) {
+        //   results.push(result.next_2);
+        //   curWord = result.next_2;
+        // }
+        // if (result.next_3 !== null) {
+        //   results.push(result.next_3);
+        //   curWord = result.next_3;
+        // } 
+
+        // Testing new functionality with WORD PAIRS
         if (result.next_2 !== null) {
+          
           results.push(result.next_2);
           curWord = result.next_2;
-        }
-        if (result.next_3 !== null) {
-          results.push(result.next_3);
-          curWord = result.next_3;
-        }    
+          nextSearchSecondWord = result.next_2;
+        }           
       }
 
+      var lastWordAdded = results[results.length-1];
       // Check if this is the end of a sentence.
-      if (curWord && ['!', '?', '.', '…'].indexOf(curWord.slice(-1)) > -1) {
+      if (curWord && ['!', '?', '.', '…'].indexOf(lastWordAdded.slice(-1)) > -1) {
         //console.log('End of sentence detected!');
         //sentences.push(results.join(' '));
         //results = [];
@@ -86,7 +113,8 @@ var tweetGenerator = {
       }
 
       if (results.join(' ').length < 40 || !endSentence) {
-        db.getRandomWord('keyword', curWord, results.prev_1, callback);    
+        //db.getRandomWord('keyword', curWord, results.prev_1, callback);    
+        db.getWordPair(nextSearchKeyword, nextSearchSecondWord, callback);
       } else {
           newSentence = results.join(' ');
           getLength = newSentence.length;

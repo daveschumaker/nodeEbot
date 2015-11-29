@@ -62,6 +62,7 @@ module.exports = {
       robotActions.lastTweet = Math.floor(Date.now() / 1000); // Update time of the last tweet.
       generator.makeTweet(function(newTweet) {
         newTweet = newTweet + generator.attachEmoji(newTweet.length);
+        newTweet = generator.detectUndefined(newTweet);
         tweet.postNewTweet(newTweet); // Post tweet.
         console.log(utils.currentTime(), newTweet + '');     
       });
@@ -77,6 +78,8 @@ module.exports = {
     if (Math.floor(Date.now() / 1000) - robotActions.lastTweet >= config.settings.postInterval) {
       robotActions.lastTweet = Math.floor(Date.now() / 1000); // Update time of the last tweet.
       generator.makeTweet(function(newTweet) {
+        newTweet = newTweet + generator.attachEmoji(newTweet.length);
+        newTweet = generator.detectUndefined(newTweet);
         tweet.postNewTweet(newTweet); // Post tweet.
         console.log(utils.currentTime(), newTweet + '');     
       });
