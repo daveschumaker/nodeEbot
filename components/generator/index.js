@@ -3,22 +3,16 @@ var config = require('../../config');
 var db = require('../../db');
 
 var tweetGenerator = {
+  testCB: function() {
+    console.log('Poop stix!');
+  },
   makeTweet: function (cbReturnTweet) {
     var self = this;
     var endSentence = false;
     var sentences = [];
     var results = [];
 
-    // Check whether or not to keep building a sentence.
-    var keepGoing = function() {
-     if (Math.random() < 0.6) {
-        return true;
-     }
-
-     return false;
-    };
-
-    var callback = function(result) {
+    var callback2 = function(result) {
       var curWord, newSentence, getLength, nextSearchKeyword, nextSearchSecondWord;
 
       //console.log('[RESULT WORD OBJ]', result);
@@ -84,13 +78,13 @@ var tweetGenerator = {
 
       var lastWordAdded = results[results.length-1];
       // Check if this is the end of a sentence.
-      if (curWord && ['!', '?', '.', '…'].indexOf(lastWordAdded.slice(-1)) > -1) {
+      if (self.checkSentenceEnd(lastWordAdded)) {
         //console.log('End of sentence detected!');
         //sentences.push(results.join(' '));
         //results = [];
         endSentence = true;
 
-        if (!keepGoing()) {
+        if (!self.checkMakeNewSentence()) {
           newSentence = results.join(' ');
           getLength = newSentence.length;
           // console.log(newSentence + ' [' + getLength + ' chars]');
@@ -131,6 +125,20 @@ var tweetGenerator = {
     db.getRandomWord('startword', null, null, callback);  
   },
 
+  // Check if punctuation noting the end of a sentence is found at the end of a word.
+  checkSentenceEnd: function(word) {
+    if (word && ['!', '?', '.', '…'].indexOf(word.slice(-1)) > -1) {
+      return true;
+    }
+    return false;
+  },
+  // Check whether or not to keep building a sentence.
+  checkMakeNewSentence: function() {
+    if (Math.random() < 0.75) {
+      return true;
+    }
+    return false;
+  },
   detectUndefined: function(sentence) {
     // Hacky way to try and detect "undefined" word that keeps popping up at end of sentences.
     if (sentence.slice(-9) === 'undefined') {
@@ -216,5 +224,5 @@ var tweetGenerator = {
   },
 
 };
-
+var callback = tweetGenerator.testCB;
 module.exports = tweetGenerator;
