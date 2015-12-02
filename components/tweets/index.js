@@ -238,12 +238,11 @@ module.exports = {
 
         client.post('favorites/create', {id: tweetID},  function(error, tweet, response){
           if(error) {
-            if (error[0].code === 139) {
+            //if (error[0].code === 139) {
               // This means we've already favorited this tweet. Ignore it.
-            } else {
-              console.log('Error favoriting tweet. Possible API rate limit encountered. Please wait a few moments.');
-              console.log(error);
-            }
+            //} else {
+              console.log('Error favoriting tweet. Possible API rate limit encountered. Please wait a few moments.', error);
+            //}
           }
         });
       }

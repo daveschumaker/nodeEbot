@@ -3,16 +3,63 @@ var config = require('../../config');
 var db = require('../../db');
 
 var tweetGenerator = {
-  testCB: function() {
-    console.log('Poop stix!');
+  testCB: function(result) {
+    // Define important variables that will keep track our our newly generated tweets.
+    var foundEndSentence = false; // Boolean to check if we've found the end of a sentence from any word in result array.
+    var newSentence;  // Sentence generated from our array of results.
+    // Store values for current words we're searching for to create our Markov chains.
+    var searchWords = {
+      current: null,
+      next: null
+    };
+    var validSentence;  // Boolean that determines whether or not a sentence is valid.
+
+    // Detect no results returned through callback at start. 
+    // Restart this whole process!
+    if (!result) {
+      db.getRandomWord('startword', null, null, callback);
+    }
+
+    // Check if result is undefined. Might be deprecated with above.
+    // We've found no more results. Let's join everything together in a new sentence.
+    if (result === undefined) {
+      newSentence = wordsArray.join(' ');
+      sentences.push(newSentence); // Add newly created sentence to the sentences array.
+      wordsArray = []; // Reset words array. So we can start pushing words for newly generated sentences.
+      self.checkSentenceEnd(sentences); // Determine whether or not to keep going.
+      validSentence = self.checkSentenceValid(sentences, 140);// Check if length is valid (e.g., less than 140 characters for a tweet).
+      if (!validSentence) {
+        // Ah, no valid sentence. Let's start the process over.
+        wordsArray = [];
+        db.getRandomWord('startword', null, null, callback);
+      } else {
+        cbReturnTweet(sentences.join(' '));
+        return; 
+      }
+    }   
+
+    // Push words into that array until the end of a sentence has been found.
+    // Check if the end of a sentence has been found.
+    result.some(function(word, index) {
+      wordsArray.push(word);
+      if (checkSentenceEnd(word)) {
+        foundEndSentence = true;
+        return true;
+      }
+    });
+
+    if (foundEndSentence) {
+      
+    }
+
   },
   makeTweet: function (cbReturnTweet) {
     var self = this;
     var endSentence = false;
     var sentences = [];
-    var results = [];
+    var wordsArray = [];
 
-    var callback2 = function(result) {
+    var callback = function(result) {
       var curWord, newSentence, getLength, nextSearchKeyword, nextSearchSecondWord;
 
       //console.log('[RESULT WORD OBJ]', result);
@@ -132,8 +179,30 @@ var tweetGenerator = {
     }
     return false;
   },
+  // Determine whether or not a sentence if valid (e.g., less than the right amount of characters for a tweet.)
+  checkSentenceValid: function(sentenceArray, maxChars) {
+    maxChars = maxChars || 140;
+    while (sentenceArray.join(' ').length > maxChars) {
+      sentenceArray.pop();
+      if (sentenceArray.length === 0) {
+        break;
+      }
+    }
+
+    if (sentenceArray.length === 0) {
+      return false; // Oops, we removed everything!
+    } else {
+      return sentenceArray;
+    }
+  },
   // Check whether or not to keep building a sentence.
-  checkMakeNewSentence: function() {
+  checkMakeNewSentence: function(sentenceArray) {
+    // Check length of sentence first.
+    if (sentenceArray.join(' ').length >= 140) {
+      return false;
+    }
+
+    // Otherwise, let's randomly device whether or not to keep going.
     if (Math.random() < 0.75) {
       return true;
     }
@@ -224,5 +293,5 @@ var tweetGenerator = {
   },
 
 };
-var callback = tweetGenerator.testCB;
+//var callback = tweetGenerator.testCB;
 module.exports = tweetGenerator;
