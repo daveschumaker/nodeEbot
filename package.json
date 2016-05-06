@@ -1,6 +1,6 @@
 {
   "name": "nodeEbot",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A twitter_ebooks style bot for Node.js ",
   "main": "bot.js",
   "scripts": {
@@ -15,6 +15,7 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "bluebird": "^2.10.0",
+    "lodash": "^4.11.2",
     "twitter": "^1.2.5"
   }
 }

@@ -1,5 +1,5 @@
 /**
-* nodeEbot v.0.2.0! 
+* nodeEbot v.0.2.0!
 * A twitter_ebooks style bot for Node.js
 * by Dave Schumaker (@davely)
 * https://github.com/daveschumaker/nodeEbot
@@ -12,7 +12,13 @@
 *   Import the robot component.
 *   This is where all the business logic is handeled.
 */
-var robot = require('./components/robot');
+var _ = require('lodash');
+var defaultConfig = require('./config');
+var Robot = require('./components/robot');
 
 // Fire up the robot!
-robot.init();
+module.exports = function(userConfig) {
+	config = _.merge(defaultConfig, userConfig);
+
+	return new Robot(config)
+}
