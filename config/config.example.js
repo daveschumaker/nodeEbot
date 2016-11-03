@@ -47,7 +47,7 @@ module.exports = {
     // If true, allows the bot to monitor the live Twitter stream
     // (and enables everything below).
     // Default: true
-    watchStream: true,
+    monitorStream: true,
     
     // If true, respond to DMs. False prevents it from responding to DMs.
     // TODO: Fix this.
