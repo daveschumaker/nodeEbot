@@ -1,6 +1,6 @@
-/** 
+/**
  *  Actions for watching and posting to Twitter
- *  
+ *
  */
 
 var Promise = require('bluebird');
@@ -29,7 +29,7 @@ module.exports = {
     });
   },
 
-  // Initialize our Twitter stream and start monitoring 
+  // Initialize our Twitter stream and start monitoring
   // new tweets that appear in our as they come in.
   watchStream: function (mode) {
     // Set proper context for 'this' since it will be called inside some functions.
@@ -56,11 +56,11 @@ module.exports = {
             if (config.settings.canFavoriteTweets) {
               self.checkInterests(tweet); // Potentially favorite tweet based on interests of our robot.
             }
-            
+
             // Look at Tweet and determine if it's a reply to our robot.
             if (tweet.id !== null) {
               self.checkReply(tweet);
-            }            
+            }
             //console.log(tweet);
           }
         });
@@ -118,10 +118,10 @@ module.exports = {
 
       // Prevent robot from going into a reply loop with itself and imploding the universe!
       if (replyUsername.toLowerCase() !== config.settings.robotName.toLowerCase() && replyCount < 5) {
-        config.settings.trackReplies.push(replyUsername); // Add user to our reply tracker so we don't spam them too much. 
+        config.settings.trackReplies.push(replyUsername); // Add user to our reply tracker so we don't spam them too much.
         console.log('\nRandomly replying to the following tweet from @' + replyUsername + ':');
         console.log(tweet.text);
-        
+
 
         this.writeReply(replyUsername, replyID, tweet.text);
       }
@@ -136,7 +136,7 @@ module.exports = {
     if (checkTweet.indexOf(myUsername) != -1 && (typeof tweet.retweeted_status == "undefined")) {
       var tempUserArray = []; // Keep track of all the users mentioned in this tweet.
       var tempAdditionalUsers; // We'll use this to generate a string of additional users.
-      
+
       // Checks tweet for any additional mentions and adds them to a temporary array.
       var checkMentions = tweet.text.split(' ');
       for (var i = 0; i < checkMentions.length; i++) {
@@ -147,7 +147,7 @@ module.exports = {
                 //console.log('Found additional user mentioned: ' + checkMentions[i]);
                 tempUserArray.push(checkMentions[i]);
               }
-            }      
+            }
       }
 
       // See if we have any additional users that we'll pass to our reply function below.
@@ -169,10 +169,10 @@ module.exports = {
           //config.settings.trackReplies.push(replyUsername,replyUsername,replyUsername,replyUsername,replyUsername,replyUsername);
         }
 
-        //config.settings.trackReplies.push(replyUsername); // Add user to our reply tracker so we don't spam them too much.    
+        //config.settings.trackReplies.push(replyUsername); // Add user to our reply tracker so we don't spam them too much.
         console.log('\nNew reply from @' + replyUsername + ':');
         console.log(tweet.text);
-        
+
         this.writeReply(replyUsers, replyID, tweet.text);
       }
     }
@@ -208,7 +208,7 @@ module.exports = {
         //console.log('Ignoring our own tweet.');
         return;
       }
-     
+
       // Base condition for our robot. Change to true if we've found
       // a matching interest. This will prevent us from trying to
       // favorite a tweet multiple times.
@@ -224,7 +224,7 @@ module.exports = {
           tempInterest = element;
           foundInterest = true;
         }
-        
+
         return interestsObject[element];
       };
 
@@ -263,18 +263,18 @@ module.exports = {
 
 
   // Check if the Twitter stream is active. It sometimes has a nasty habit of dying.
-  // Sometimes, Twitter can drop our stream. Based on this document, 
+  // Sometimes, Twitter can drop our stream. Based on this document,
   // we check out lastTweetTime stamp to see if
-  // it's been longer than 90 seconds since the last Tweet. 
+  // it's been longer than 90 seconds since the last Tweet.
   // If so, restart the stream!
   // More info: https://dev.twitter.com/streaming/overview/connecting
   checkStream: function() {
-    var curTime = Math.floor(Date.now() / 1000);   
+    var curTime = Math.floor(Date.now() / 1000);
     // It's been longer than around 120 seconds since we've seen a tweet. Let's restart the stream.
     // console.log('[' + utils.currentTime() + '] Debug - lastTweetReceivedTime: ', config.settings.lastTweetReceivedTime);
     if (curTime - config.settings.lastTweetReceivedTime >= 120) {
       console.log('Stream may have dropped. Restarting stream...');
-      this.watchStream();  
+      this.watchStream();
     }
   },
 
@@ -292,7 +292,7 @@ module.exports = {
 
   // If we're writing a reply to a tweet, let's pass in the username and the ID of the tweet.
   writeReply: function(username, replyID, replytext) {
-    
+
     if (this.checkIgnored(username)) {
       console.log("\nUser is on ignore list. Not replying.");
     } else {
@@ -311,12 +311,12 @@ module.exports = {
         replyTweet = '@' + username + ' ' + myReply;
       } else {
         console.log('\nGenerating a random reply to user.');
-        replyTweet = generator.twitterFriendly(true, username); 
+        replyTweet = generator.twitterFriendly(true, username);
       }
-        
+
         console.log('\nReplying to user @' + username + ':');
         console.log(replyTweet);
-        if (config.settings.respondReplies) self.sendReply(replyTweet,replyID); 
+        if (config.settings.respondReplies) self.sendReply(replyTweet,replyID);
       }, (randomDelay * 1000));
     }
   },
@@ -343,7 +343,7 @@ module.exports = {
     client.get('followers/list', {count: 3}, function(error, followers, response){
       if(error) {
         console.log('followers list error', error);
-      }      
+      }
 
       if(!error) {
         var followerArray = [];
@@ -359,7 +359,7 @@ module.exports = {
           }
         });
       }
-    });  
+    });
   },
 
 };

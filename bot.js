@@ -1,5 +1,5 @@
 /**
-* nodeEbot v.0.2.0! 
+* nodeEbot!
 * A twitter_ebooks style bot for Node.js
 * by Dave Schumaker (@davely)
 * https://github.com/daveschumaker/nodeEbot
@@ -12,6 +12,8 @@
 *   Import the robot component.
 *   This is where all the business logic is handeled.
 */
+
+global.botVersion = '0.2.1';
 var robot = require('./components/robot');
 
 // Fire up the robot!
