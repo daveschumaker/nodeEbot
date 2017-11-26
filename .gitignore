@@ -1,4 +1,5 @@
 config/config.js
 node_modules/
 npm-debug.log
+tweets.csv
 tweets.txt

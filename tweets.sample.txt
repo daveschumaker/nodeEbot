@@ -2,3 +2,5 @@ Rename this file to tweets.txt
 Make sure each sentence you want analyzed is on a new line.
 Add anything you want parsed and analyzed to this text file.
 You should be ready to go!
+If you have any problems, send a message to @davely.
+You can also download the latest version of nodeEbot on GitHub. https://github.com/daveschumaker/nodeEbot
