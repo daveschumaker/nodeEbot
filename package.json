@@ -1,6 +1,6 @@
 {
   "name": "nodeEbot",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A twitter_ebooks style bot for Node.js ",
   "main": "bot.js",
   "scripts": {
@@ -12,9 +12,9 @@
     "url": "https://github.com/daveschumaker/nodeEbot"
   },
   "author": "Dave Schumaker",
-  "license": "BSD-2-Clause",
+  "license": "MIT",
   "dependencies": {
-    "bluebird": "^2.10.0",
-    "twitter": "^1.2.5"
+    "bluebird": "3.5.1",
+    "twitter": "1.7.1"
   }
 }
