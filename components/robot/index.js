@@ -40,7 +40,7 @@ module.exports = {
   // Example, build word dictionary. Start watching stream, etc.
   init: function() {
     // Load up robot settings.
-    console.log('\n\nNODEEBOT FOR NODEJS v.0.2.0');
+    console.log('\n\nNODEEBOT FOR NODEJS v', global.botVersion);
     console.log('by Dave Schumaker (@davely)\n');
     console.log('-== CONFIG SETTINGS ==-');
     console.log(' -Post to Twitter? ' + config.settings.postTweets);
@@ -50,8 +50,6 @@ module.exports = {
     console.log(' -Follow new users? ' + config.settings.followUsers);
     console.log(' -Mark tweets as favorites? ' + config.settings.canFavoriteTweets);
     console.log(' -Tweet interval: ' + config.settings.postInterval + ' seconds');
-    console.log('\nAnalyzing data and creating word corpus from file \'' + tweetFile + '\'');
-    console.log('(This may take a few minutes to generate...)');
 
     // Set proper context
     var self = this;
@@ -59,9 +57,15 @@ module.exports = {
     // Load in text file containing raw Tweet data.
     fs.readFileAsync(tweetFile)
     .then(function(fileContents) {
+      console.log('\nAnalyzing data and creating word corpus from file \'' + tweetFile + '\'');
+      console.log('(This may take a few minutes to generate...)');
       //Split content into array, separating by line.
       var content = fileContents.toString().split("\n");
       return content;
+    })
+    .then(function(content){
+      // Strip usernames and links from content
+      return generator.cleanContent(content);
     })
     .then(function(content){
       //Build word corpus using content array above.
@@ -69,6 +73,9 @@ module.exports = {
     })
     .then(function(data){
       // Once word dictionary is built, kick off the robots actions!
+
+      console.log(data);
+
       self.onBoot();
 
       /*
@@ -79,15 +86,28 @@ module.exports = {
       *  etc.
       */
       setInterval(function() {
+        console.log(generator.makeTweet(140));
         self.robotTasks();
-      }, 5000);        
-    });
+      }, 5000);
+    })
+    .catch(function(err) {
+      if (err.code === 'ENOENT') {
+        console.error('ERROR: tweets.txt does not exist');
+        return;
+      }
+    })
   },
 
   /*
   *  These are tasks the robot should do the first time it loads up.
   */
   onBoot: function() {
+    // If no credentials are provided in config file, ignore this request.
+    if (!config.twitter.consumer_key && !config.twitter.consumer_secret && !config.twitter.access_token_key && !config.twitter.access_token_secret) {
+      console.log('Error: No credentials provided.');
+      return;
+    }
+
     // Start watching the Twitter stream.
     tweet.watchStream();
 
@@ -103,12 +123,12 @@ module.exports = {
       robotActions.lastTweet = Math.floor(Date.now() / 1000); // Update time of the last tweet.
       newTweet = generator.makeTweet(140); // Create a new tweet.
       tweet.postNewTweet(newTweet); // Post tweet.
-      console.log(utils.currentTime(), newTweet + '');     
+      console.log(utils.currentTime(), newTweet + '');
     }
   },
 
   robotTasks: function() {
-    /* 
+    /*
     *  Check how long it's been since robot last tweeted.
     *  If amount of time is greater than the tweet interval
     *  defined in the config file. Go ahead and post a new tweet.
@@ -120,18 +140,21 @@ module.exports = {
       console.log(utils.currentTime(), newTweet + '');
     }
 
-    /*
-    *  Check if the Twitter Stream dropped. If so, reinitialize it.
-    */
-    tweet.checkStream();
+    if (config.twitter.consumer_key && config.twitter.consumer_secret && config.twitter.access_token_key && config.twitter.access_token_secret) {
+      /*
+      *  Check if the Twitter Stream dropped. If so, reinitialize it.
+      */
+      tweet.checkStream();
 
-    /*
-    *   Check for new followers
-    */
-    if (config.settings.followUsers && Math.floor(Date.now() / 1000) - robotActions.lastFollowCheck >= 300) {
-      robotActions.lastFollowCheck = Math.floor(Date.now() / 1000);
-      tweet.getFollowers();      
+      /*
+      *   Check for new followers
+      */
+      if (config.settings.followUsers && Math.floor(Date.now() / 1000) - robotActions.lastFollowCheck >= 300) {
+        robotActions.lastFollowCheck = Math.floor(Date.now() / 1000);
+        tweet.getFollowers();
+      }
     }
+
   }
 
 };

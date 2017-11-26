@@ -1,5 +1,5 @@
 # NodeEbot
-_Current Version: 0.2.0_
+_Current Version: 0.2.1_
 
 This is NodeEbot (pronounced as _"nodey bot"_ or even _"naughty bot"_, if you prefer). It stands for **Node** **E**-books **bot**.
 
@@ -20,7 +20,7 @@ node bot.js
 
 ## Installation and Usage
 
-This project requires Nodejs v0.10.35+. If you're looking for a place to host Nodejs projects, I've had success setting up a free Ubuntu virtual server through Amazon's Web Services dashboard and installing nodejs on it.
+This project was built using Node JS v8.3.0. I can't guarantee how well it will work with other versions of Node. If you're looking for a place to host Node projects, I've had success setting up a free Ubuntu virtual server through Amazon's Web Services dashboard and installing Node on it.
 
 To run, copy the project into your preferred directory and then install the required dependencies using:
 
@@ -61,7 +61,7 @@ Right now, I haven't implemented a way to parse the Twitter's csv data that's ge
 I've added some basic ability to strip our Twitter usernames and URLs from the archive. That means it will treat something like:
 
 ```
-@davely That's great. I've seen something like that before. 
+@davely That's great. I've seen something like that before.
 http://flickr.com/...
 ```
 
@@ -73,11 +73,11 @@ That's great. I've seen something like that before.
 
 ## Running multiple bots
 
-If you want to run multiple bots for different Twitter accounts, copy this project into separate folders (e.g., _~/MyBot1_, _~/MyBot2_, _~/MyBot3_, etc) and make sure you input the proper Twitter API credentials at the top of each bot.js file. Then spool up separate node instances and load up the relevant bot files. 
+If you want to run multiple bots for different Twitter accounts, copy this project into separate folders (e.g., _~/MyBot1_, _~/MyBot2_, _~/MyBot3_, etc) and make sure you input the proper Twitter API credentials at the top of each bot.js file. Then spool up separate node instances and load up the relevant bot files.
 
 ## Future things to do.
 
-* Turn it into a proper npm module. 
+* Turn it into a proper npm module.
 * Better regex handling to clean up source material (e.g., links, usernames, etc
 * Send direct messages back to users who DM our robot.
 * Keyword ranking of our source material. (Sort of implemented but disabled right now since performance is SLOW.)
@@ -86,6 +86,11 @@ If you want to run multiple bots for different Twitter accounts, copy this proje
 * Let it potentially upload images or GIFs.
 
 ## Changelog
+
+### v 0.2.1 (2017/11/25)
+
+* Update Twitter and Bluebird libraries.
+* Run user content through cleanup method to strip usernames and links before building corpus.
 
 ### v 0.2.0 (2015/10/06)
 
